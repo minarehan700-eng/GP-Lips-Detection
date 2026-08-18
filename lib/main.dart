@@ -1,23 +1,25 @@
-import 'package:flutter/material.dart'; // استيراد مكتبة Flutter لبناء الواجهات
+import 'package:flutter/material.dart';
 
-import 'core/app_theme.dart'; // استيراد ملف ألوان وتنسيق التطبيق
-import 'screens/splash_screen.dart'; // استيراد شاشة البداية (Splash)
+import 'core/app_theme.dart';
+import 'screens/splash_screen.dart';
 
-void main() { // نقطة بداية تشغيل التطبيق
-  WidgetsFlutterBinding.ensureInitialized(); // تهيئة Flutter قبل أي عمليات أخرى
-  runApp(const LipsOfflineApp()); // تشغيل التطبيق الرئيسي
-} // نهاية الدالة main
+/// App entry point — initializes Flutter and launches the root widget.
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const LipsOfflineApp());
+}
 
-class LipsOfflineApp extends StatelessWidget { // كلاس التطبيق الرئيسي (بدون حالة داخلية)
-  const LipsOfflineApp({super.key}); // مُنشئ مع مفتاح اختياري للـ Widget
+/// Root MaterialApp with dark theme; starts on the splash screen.
+class LipsOfflineApp extends StatelessWidget {
+  const LipsOfflineApp({super.key});
 
-  @override // تجاوز الدالة المطلوبة من StatelessWidget
-  Widget build(BuildContext context) { // بناء شجرة الواجهات
-    return MaterialApp( // تطبيق Material Design
-      debugShowCheckedModeBanner: false, // إخفاء شريط "DEBUG" في الزاوية
-      title: 'Lips Offline', // عنوان التطبيق (للمهام الداخلية)
-      theme: AppTheme.dark(), // استخدام الثيم الداكن من AppTheme
-      home: const SplashScreen(), // الشاشة الأولى عند فتح التطبيق
-    ); // نهاية MaterialApp
-  } // نهاية build
-} // نهاية كلاس LipsOfflineApp
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Lips Offline',
+      theme: AppTheme.dark(),
+      home: const SplashScreen(),
+    );
+  }
+}

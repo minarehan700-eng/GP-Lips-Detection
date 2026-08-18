@@ -2,11 +2,13 @@ import Foundation
 import MediaPipeTasksVision
 import UIKit
 
+/// Native MediaPipe Face Landmarker — extracts mouth blendshapes and bounding box from JPEG frames.
 final class FaceLandmarkerBridge {
   private var faceLandmarker: FaceLandmarker?
 
   func isInitialized() -> Bool { faceLandmarker != nil }
 
+  /// Loads the face landmarker model from the app bundle.
   func initialize(modelPath: String) throws {
     if faceLandmarker != nil { return }
 
@@ -22,6 +24,7 @@ final class FaceLandmarkerBridge {
     faceLandmarker = try FaceLandmarker(options: options)
   }
 
+  /// Decodes a JPEG frame, runs face detection, and returns mouth metrics for Flutter.
   func processFrame(frameBytes: Data) -> [String: Any] {
     guard !frameBytes.isEmpty else { return emptyFaceResult() }
     guard let faceLandmarker else { return emptyFaceResult() }
@@ -75,8 +78,8 @@ final class FaceLandmarkerBridge {
     return out
   }
 
+  /// Outer-lip bounding box from corner and mid-lip landmark indices.
   private func mouthBoundingBox(landmarks: [NormalizedLandmark]) -> (Double, Double, Double, Double) {
-    // Tight outer-lip box: 61/291 corners, 0/17 vertical, 13/14 mid lip
     let lipIndices = [61, 291, 0, 17, 13, 14]
     var minX = 1.0
     var minY = 1.0

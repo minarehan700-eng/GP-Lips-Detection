@@ -1,31 +1,31 @@
-import 'package:flutter/material.dart'; // Flutter UI
+import 'package:flutter/material.dart';
 
-import '../core/app_theme.dart'; // ألوان العلامة
+import '../core/app_theme.dart';
 
-class GradientBackground extends StatelessWidget { // خلفية بتدرج لوني
-  const GradientBackground({ // مُنشئ
-    required this.child, // المحتوى فوق الخلفية
-    super.key, //
-  }); //
+class GradientBackground extends StatelessWidget {
+  const GradientBackground({
+    required this.child,
+    super.key,
+  });
 
-  final Widget child; // الابن
+  final Widget child;
 
-  @override // تجاوز build
-  Widget build(BuildContext context) { // بناء الخلفية
-    return Container( // حاوية بخلفية
-      decoration: const BoxDecoration( // تنسيق الخلفية
-        gradient: LinearGradient( // تدرج خطي
-          begin: Alignment.topLeft, // من أعلى اليسار
-          end: Alignment.bottomRight, // إلى أسفل اليمين
-          colors: [ // الألوان
-            Color(0xFF0C1022), // أزرق داكن جداً
-            Color(0xFF191D39), // بنفسجي داكن
-            AppTheme.brandPurple, // بنفسجي العلامة
-          ], //
-          stops: [0.0, 0.58, 1.0], // مواقع التوقف
-        ), //
-      ), //
-      child: child, // المحتوى
-    ); //
-  } // نهاية build
-} // نهاية GradientBackground
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF0C1022),
+            Color(0xFF191D39),
+            AppTheme.brandPurple,
+          ],
+          stops: [0.0, 0.58, 1.0],
+        ),
+      ),
+      child: child,
+    );
+  }
+}
