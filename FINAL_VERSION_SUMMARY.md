@@ -1,7 +1,7 @@
 # FINAL VERSION SUMMARY
 
 **Project:** Lips Offline — offline lipsing and viseme (A–E) detection
-**Branch delivered:** `beginner-friendly-final` (commit `1a5c4ee`)
+**Branch delivered:** `beginner-friendly-final` (commit `5ca97f8`)
 **Original preserved at:** commit `fb10d54` — untouched, still on GitHub
 **Package built:** this ZIP contains only the latest version. No drafts, no mixtures.
 
@@ -53,9 +53,10 @@ If you want the restructure, it should be done **after** the defence.
 
 ## 2. All files modified or created
 
-**Summary:** 45 files changed · 5,652 insertions · 1,061 deletions
+**Summary:** 77 files changed · 7,091 insertions · 1,061 deletions
+(46 created · 30 modified · 1 deleted)
 
-### Created (14)
+### Created (46 files)
 
 | File | Purpose |
 |------|---------|
