@@ -1,9 +1,16 @@
 import Flutter
 import UIKit
 
+/// The iOS entry point, and the switchboard between Flutter and MediaPipe.
+///
+/// It listens on the same method channel as the Android `MainActivity` and
+/// answers the same three methods, so the Dart code is identical on both
+/// platforms.
 @main
 @objc class AppDelegate: FlutterAppDelegate {
+  /// Must match the channel name used in the Dart extractor.
   private let faceChannelName = "lips/offline/face"
+
   private let faceBridge = FaceLandmarkerBridge()
 
   override func application(

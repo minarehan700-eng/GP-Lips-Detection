@@ -15,24 +15,33 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
+  /// Controls which page the swipeable [PageView] is showing.
   final _pageController = PageController();
+
+  /// Index of the page on screen, used to fill the dots and the button label.
   int _currentPage = 0;
 
   static const _pages = OnboardingPageData.pages;
+
   bool get _isLastPage => _currentPage >= _pages.length - 1;
 
   @override
   void dispose() {
+    // Controllers hold animation resources and must be released by hand.
     _pageController.dispose();
     super.dispose();
   }
 
+  /// Goes to the home screen, replacing onboarding so the back button cannot
+  /// return to it.
   void _goHome() {
     Navigator.of(context).pushReplacement(
       AppNavigation.fadeTransition(const HomeScreen()),
     );
   }
 
+  /// Handles the bottom button: it advances one page, or finishes onboarding
+  /// when the last page is already showing.
   void _onNext() {
     if (_isLastPage) {
       _goHome();
@@ -86,10 +95,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 }
 
+/// The row of dots showing how many pages there are and which one is open.
+/// The current dot stretches into a short bar so it is easy to spot.
 class _PageDots extends StatelessWidget {
   const _PageDots({required this.count, required this.index});
 
+  /// Total number of pages.
   final int count;
+
+  /// Index of the page currently on screen.
   final int index;
 
   @override

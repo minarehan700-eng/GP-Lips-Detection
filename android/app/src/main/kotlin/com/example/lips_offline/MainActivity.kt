@@ -7,11 +7,32 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import java.util.concurrent.Executors
 
-/// Main activity — wires Flutter MethodChannel calls to [FaceLandmarkerBridge].
+/**
+ * The Android entry point, and the switchboard between Flutter and MediaPipe.
+ *
+ * Why this class is needed:
+ * Flutter code cannot call Kotlin directly. It sends a named message over a
+ * *method channel*; this class listens on that channel and calls
+ * [FaceLandmarkerBridge] for each message, then sends the answer back.
+ *
+ * Threading matters here:
+ *  - the model is loaded on the MAIN thread (Android 15/16 crashed otherwise);
+ *  - frames are analysed on a BACKGROUND thread, so the app stays smooth;
+ *  - answers are posted back on the MAIN thread, which Flutter requires.
+ */
 class MainActivity : FlutterActivity() {
+    /** Must match the channel name used in the Dart extractor. */
     private val faceChannelName = "lips/offline/face"
+
     private lateinit var faceBridge: FaceLandmarkerBridge
+
+    /**
+     * A single background thread for frame analysis. One thread — not a pool —
+     * because MediaPipe handles one frame at a time anyway, and this keeps
+     * frames in order.
+     */
     private val faceFrameExecutor = Executors.newSingleThreadExecutor()
+
     private val mainHandler = Handler(Looper.getMainLooper())
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -44,6 +65,9 @@ class MainActivity : FlutterActivity() {
                         result.success(faceBridge.isInitialized())
                     }
                     "processFaceFrame" -> {
+                        // A frame can arrive before the model finished loading.
+                        // That is normal at start-up, so answer "no face"
+                        // rather than reporting an error.
                         if (!faceBridge.isInitialized()) {
                             result.success(emptyFacePayload())
                             return@setMethodCallHandler
@@ -55,12 +79,18 @@ class MainActivity : FlutterActivity() {
                             return@setMethodCallHandler
                         }
 
+                        // Detection is slow, so it runs off the main thread to
+                        // keep the camera preview smooth. The answer is then
+                        // posted back on the main thread, because Flutter only
+                        // accepts channel replies from there.
                         faceFrameExecutor.execute {
                             val payload = try {
                                 faceBridge.processFrame(bytes)
                             } catch (_: Exception) {
                                 emptyFacePayload()
                             }
+                            // Skip the reply if the user has already closed
+                            // the app; Flutter would no longer be listening.
                             if (!isFinishing) {
                                 mainHandler.post { result.success(payload) }
                             }
@@ -79,18 +109,9 @@ class MainActivity : FlutterActivity() {
         super.onDestroy()
     }
 
-    private fun emptyFacePayload(): Map<String, Any> = mapOf(
-        "faceDetected" to false,
-        "mouthOpen" to 0.0,
-        "mouthPucker" to 0.0,
-        "smile" to 0.0,
-        "mouthClose" to 0.0,
-        "mouthFunnel" to 0.0,
-        "mouthStretch" to 0.0,
-        "mouthMinX" to 0.0,
-        "mouthMinY" to 0.0,
-        "mouthMaxX" to 0.0,
-        "mouthMaxY" to 0.0,
-        "ts" to System.currentTimeMillis()
-    )
+    /**
+     * The "no face" reply. It is built by [FaceLandmarkerBridge] so the empty
+     * reply and the real reply always have exactly the same keys.
+     */
+    private fun emptyFacePayload(): Map<String, Any> = faceBridge.emptyFaceResult()
 }

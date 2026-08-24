@@ -18,20 +18,27 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  /// How long the logo stays on screen before onboarding opens.
+  /// Long enough to read the name, short enough not to feel slow.
+  static const Duration splashDuration = Duration(milliseconds: 2200);
+
   Timer? _splashTimer;
 
   @override
   void initState() {
     super.initState();
-    _splashTimer = Timer(const Duration(milliseconds: 2200), _goOnboarding);
+    _splashTimer = Timer(splashDuration, _goOnboarding);
   }
 
   @override
   void dispose() {
+    // Cancelled so the timer cannot fire after the screen is gone, which
+    // would try to navigate from a widget that no longer exists.
     _splashTimer?.cancel();
     super.dispose();
   }
 
+  /// Replaces the splash with onboarding once the timer finishes.
   void _goOnboarding() {
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
@@ -66,6 +73,10 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 }
 
+/// The splash logo: two rings turning slowly around a rounded app icon.
+///
+/// The rings turn in opposite directions and at different speeds, which makes
+/// the mark look alive without needing an image file.
 class _AnimatedLogoMark extends StatefulWidget {
   @override
   State<_AnimatedLogoMark> createState() => _AnimatedLogoMarkState();

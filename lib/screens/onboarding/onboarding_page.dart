@@ -4,9 +4,14 @@ import '../../core/app_theme.dart';
 import '../../widgets/glass_card.dart';
 import 'onboarding_page_data.dart';
 
+/// Draws one onboarding page from its [OnboardingPageData].
+///
+/// All three pages share this single layout, so only the words and the icon
+/// change between them.
 class OnboardingPage extends StatelessWidget {
   const OnboardingPage({super.key, required this.data});
 
+  /// The words and icon for this page.
   final OnboardingPageData data;
 
   @override

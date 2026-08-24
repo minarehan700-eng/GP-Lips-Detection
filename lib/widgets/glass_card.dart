@@ -2,6 +2,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+/// A translucent "frosted glass" panel used for every card in the app.
+///
+/// It blurs whatever is behind it and lays a faint white gradient on top, so
+/// the gradient background still shows through while the text stays readable.
+/// Every card uses this one widget, which keeps the look consistent.
 class GlassCard extends StatelessWidget {
   const GlassCard({
     required this.child,
@@ -12,10 +17,16 @@ class GlassCard extends StatelessWidget {
     this.blur = 18,
   });
 
+  /// The content placed inside the card.
   final Widget child;
+
   final EdgeInsetsGeometry padding;
   final double borderRadius;
+
+  /// How solid the white overlay is, from 0.0 (invisible) to 1.0 (opaque).
   final double opacity;
+
+  /// How strongly the background behind the card is blurred.
   final double blur;
 
   @override

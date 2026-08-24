@@ -10,7 +10,15 @@ import '../widgets/lips_camera_preview.dart';
 import '../widgets/lips_detection_panels.dart';
 import 'settings_screen.dart';
 
-/// Main detection screen — owns the camera session and displays live results.
+/// The main screen: live camera, lipsing status, and the detected letter.
+///
+/// Why this screen exists:
+/// It is where the user actually practises. It owns a [LipsCameraSession] —
+/// which does all the real work — and its own job is only to show whatever the
+/// session most recently produced, plus the practice-target letter the user
+/// picked.
+///
+/// The screen has three states: loading, error, and running.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -19,10 +27,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  /// Owns the camera and both detectors.
   final _session = LipsCameraSession();
 
+  /// True while the camera and model are still starting up.
   bool _initializing = true;
+
+  /// Guards against starting the camera twice.
   bool _setupStarted = false;
+
+  /// The letter the user is practising, or null when no target is set.
   String? _targetLetter;
 
   @override
@@ -31,7 +45,11 @@ class _HomeScreenState extends State<HomeScreen> {
     _scheduleSetup();
   }
 
-  /// Defers camera init until after the first frame so the widget tree is ready.
+  /// Starts the camera after the first frame is drawn.
+  ///
+  /// Opening the camera during `initState` would block the very first build,
+  /// so the user would stare at a blank screen. Waiting one frame means the
+  /// loading spinner is already visible while the camera warms up.
   void _scheduleSetup() {
     if (_setupStarted) return;
     _setupStarted = true;
@@ -44,16 +62,26 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  /// Redraws the screen with the session's latest result.
+  ///
+  /// This is handed to the session as a callback, so the session never needs
+  /// to know anything about widgets. The `mounted` check stops a late frame
+  /// from redrawing a screen the user has already left.
   void _notifySessionChanged() {
     if (mounted) setState(() {});
   }
 
+  /// Runs the session start-up and then hides the loading view.
   Future<void> _setup() async {
     await _session.initialize(_notifySessionChanged);
     if (!mounted) return;
     setState(() => _initializing = false);
   }
 
+  /// Opens Settings and reloads the thresholds when the user comes back.
+  ///
+  /// The reload is what makes a moved slider take effect immediately, without
+  /// restarting the camera.
   Future<void> _openSettings() async {
     await Navigator.of(context).push(
       MaterialPageRoute<void>(builder: (_) => const SettingsScreen()),
@@ -63,6 +91,8 @@ class _HomeScreenState extends State<HomeScreen> {
     _notifySessionChanged();
   }
 
+  /// Restarts the whole camera session after an error ("Try Again" button).
+  /// The practice target is cleared so the user starts from a clean screen.
   Future<void> _retrySetup() async {
     _setupStarted = true;
     setState(() {
@@ -74,6 +104,8 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() => _initializing = false);
   }
 
+  /// Sets or clears the practice target when a letter chip is tapped.
+  /// Tapping the letter that is already the target switches the target off.
   void _toggleTargetLetter(String letter) {
     setState(() {
       _targetLetter = _targetLetter == letter ? null : letter;
@@ -82,6 +114,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    // Releases the camera; without this it would keep running in the
+    // background and the phone would show the camera-in-use indicator.
     unawaited(_session.dispose());
     super.dispose();
   }
@@ -106,8 +140,15 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Chooses between the loading, error and running views.
+  ///
+  /// The order matters: the loading view is only shown while there is no
+  /// camera and no error yet, so a failure replaces the spinner straight away
+  /// instead of leaving the user waiting forever.
   Widget _buildBody(BuildContext context) {
-    if (_initializing && _session.camera == null && _session.error == null) {
+    final bool stillStartingUp =
+        _initializing && _session.camera == null && _session.error == null;
+    if (stillStartingUp) {
       return _LoadingView(phase: _session.initPhase);
     }
 
@@ -157,7 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: DetectionStatusCard(
                     label: 'Lipsing',
                     value: lipsing ? 'Yes' : 'No',
-                    accent: lipsing ? const Color(0xFF4ADE80) : Colors.white54,
+                    accent: lipsing ? AppTheme.successGreen : Colors.white54,
                     prominent: true,
                   ),
                 ),
@@ -186,6 +227,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+/// Spinner shown while starting up, with the current step underneath.
+///
+/// The step text ("Loading face landmarker...", "Starting camera...") tells
+/// the user that the app is working and, if it stops, exactly where it stuck.
 class _LoadingView extends StatelessWidget {
   const _LoadingView({required this.phase});
 
@@ -210,6 +255,11 @@ class _LoadingView extends StatelessWidget {
   }
 }
 
+/// Shown when the camera or the model could not start.
+///
+/// It repeats the two causes that account for almost every failure — a missing
+/// model file and refused camera permission — so the user can fix the problem
+/// without reading the code, and offers a retry button.
 class _ErrorView extends StatelessWidget {
   const _ErrorView({required this.error, required this.onRetry});
 
