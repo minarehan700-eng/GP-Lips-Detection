@@ -33,6 +33,12 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Gradle build output. The Flutter build directory is redirected to
+# android/build by android/build.gradle.kts, so it needs its own rule —
+# the /build/ line above only matches the project root.
+android/build/
+android/app/build/
+
 # Symbolication related
 app.*.symbols
 
