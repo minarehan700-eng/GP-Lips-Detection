@@ -5,6 +5,15 @@ import '../core/detector_settings.dart';
 import '../widgets/glass_card.dart';
 import '../widgets/gradient_background.dart';
 
+/// Lets the user tune how sensitive the detection is.
+///
+/// Why this screen exists:
+/// Faces, cameras and lighting differ, so the built-in thresholds do not suit
+/// everyone. Three sliders let the user make detection stricter or more
+/// forgiving, and the choice is saved on the phone.
+///
+/// Changes are held in memory while sliding and only written when the user
+/// presses Save, so an accidental drag does not overwrite a good setting.
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
@@ -13,7 +22,10 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  /// The values shown by the sliders right now (not yet saved).
   DetectorSettings _settings = DetectorSettings.defaults;
+
+  /// True while the saved values are being read from the phone.
   bool _loading = true;
 
   @override
@@ -22,6 +34,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _load();
   }
 
+  /// Reads the saved settings and shows them on the sliders.
+  ///
+  /// The `mounted` check guards against the user leaving the screen before
+  /// the read finishes; calling setState after that would throw.
   Future<void> _load() async {
     final loaded = await DetectorSettings.load();
     if (!mounted) return;
@@ -31,12 +47,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
+  /// Writes the current slider values to the phone and confirms to the user.
+  ///
+  /// The home screen reloads the detectors when this screen is closed, so the
+  /// new values take effect as soon as the user goes back.
   Future<void> _save() async {
     await _settings.save();
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Settings saved')),
     );
+  }
+
+  /// Puts the sliders back to the built-in defaults.
+  /// Nothing is stored until the user presses Save.
+  void _resetToDefaults() {
+    setState(() {
+      _settings = DetectorSettings.defaults;
+    });
   }
 
   @override
@@ -72,9 +100,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               label: 'Mouth-open threshold',
                               value: _settings.mouthOpenThreshold,
                               display: _settings.mouthOpenThreshold.toStringAsFixed(2),
-                              min: 0.05,
-                              max: 0.70,
-                              divisions: 13,
+                              min: DetectorSettings.mouthOpenMin,
+                              max: DetectorSettings.mouthOpenMax,
+                              divisions: DetectorSettings.mouthOpenDivisions,
                               hint: 'Higher = mouth must open more to count as lipsing',
                               onChanged: (v) => setState(
                                 () => _settings = _settings.copyWith(mouthOpenThreshold: v),
@@ -85,9 +113,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               label: 'Motion threshold',
                               value: _settings.motionThreshold,
                               display: _settings.motionThreshold.toStringAsFixed(3),
-                              min: 0.010,
-                              max: 0.080,
-                              divisions: 14,
+                              min: DetectorSettings.motionMin,
+                              max: DetectorSettings.motionMax,
+                              divisions: DetectorSettings.motionDivisions,
                               hint: 'Lower = small mouth movement counts as lipsing',
                               onChanged: (v) => setState(
                                 () => _settings = _settings.copyWith(motionThreshold: v),
@@ -98,9 +126,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               label: 'Letter min-score',
                               value: _settings.letterMinScore,
                               display: _settings.letterMinScore.toStringAsFixed(2),
-                              min: 0.10,
-                              max: 0.70,
-                              divisions: 12,
+                              min: DetectorSettings.letterMinScoreMin,
+                              max: DetectorSettings.letterMinScoreMax,
+                              divisions: DetectorSettings.letterMinScoreDivisions,
                               hint: 'Higher = stricter A–E classification',
                               onChanged: (v) => setState(
                                 () => _settings = _settings.copyWith(letterMinScore: v),
@@ -122,9 +150,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: OutlinedButton(
-                          onPressed: () => setState(() {
-                            _settings = DetectorSettings.defaults;
-                          }),
+                          onPressed: _resetToDefaults,
                           child: const Text('Reset to defaults'),
                         ),
                       ),
@@ -137,6 +163,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 }
 
+/// One labelled slider: title, current value, the slider, and a short hint.
+///
+/// All three settings look and behave the same, so they share this widget
+/// instead of repeating the same layout three times.
 class _SliderRow extends StatelessWidget {
   const _SliderRow({
     required this.label,
@@ -178,6 +208,8 @@ class _SliderRow extends StatelessWidget {
           ],
         ),
         Slider(
+          // Clamped because a value saved by an older version of the app
+          // could sit outside today's range, and Slider throws if it does.
           value: value.clamp(min, max),
           min: min,
           max: max,

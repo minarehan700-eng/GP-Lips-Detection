@@ -14,7 +14,13 @@ The app answers two simple questions:
 
 This project is a **standalone** app. It only reuses MediaPipe’s face pipeline — it does **not** include hand signs, dictionaries, login, or other features from the separate Signly project.
 
-For a full university-style report with more diagrams and testing notes, see [`docs/LIPS_OFFLINE_DISSERTATION.md`](docs/LIPS_OFFLINE_DISSERTATION.md).
+### Documentation map
+
+| File | What it is for |
+|------|----------------|
+| **[`VIVA_CODE_GUIDE.md`](VIVA_CODE_GUIDE.md)** | **Start here to prepare for the discussion.** Explains every important class and function, with likely examiner questions, model answers, and presentation scripts. English + Arabic. |
+| [`REFACTOR_REPORT.md`](REFACTOR_REPORT.md) | What was simplified, the feature checklist, the test report, and the honest list of untested areas |
+| [`docs/LIPS_OFFLINE_DISSERTATION.md`](docs/LIPS_OFFLINE_DISSERTATION.md) | The full university-style report with diagrams and testing notes |
 
 ---
 
@@ -234,12 +240,23 @@ Gp-Lips-Detection/
 │   ├── infrastructure/
 │   │   ├── camera_frame_encoder.dart      # Camera YUV → JPEG
 │   │   └── mediapipe_face_landmark_extractor.dart  # Flutter ↔ native bridge
-│   ├── screens/
+│   ├── screens/                           # (see "Why these layer names?" below)
 │   │   ├── splash_screen.dart
 │   │   ├── home_screen.dart
 │   │   ├── settings_screen.dart
 │   │   └── onboarding/                    # 3 intro pages
 │   └── widgets/                           # Preview, panels, gradient UI
+├── test/                                  # 73 automated tests
+│   ├── helpers/fake_frames.dart           # Builds fake MediaPipe frames
+│   ├── lipsing_detector_test.dart         # Yes/No decision + anti-flicker
+│   ├── lip_letter_detector_test.dart      # One test per letter + priority
+│   ├── mouth_box_painter_test.dart        # Pixel mapping, mirror, rotation
+│   ├── face_lips_result_test.dart         # The shared data model
+│   ├── detector_settings_test.dart        # Save / load settings
+│   ├── widget_test.dart                   # App start-up
+│   ├── onboarding_screen_test.dart        # Page navigation
+│   ├── settings_screen_test.dart          # Save workflow
+│   └── detected_letter_panel_test.dart    # Practice-target workflow
 ├── android/
 │   └── app/src/main/
 │       ├── kotlin/.../FaceLandmarkerBridge.kt
@@ -249,8 +266,24 @@ Gp-Lips-Detection/
 │   ├── LIPS_OFFLINE_DISSERTATION.md       # Full graduation report
 │   ├── capture_screenshots.ps1            # Script to capture app screenshots
 │   └── screenshots/                       # PNG figures for docs (see below)
+├── VIVA_CODE_GUIDE.md                     # Discussion / defence guide
+├── REFACTOR_REPORT.md                     # What was simplified, and the test report
 └── pubspec.yaml
 ```
+
+### Why these layer names?
+
+The `lib/` folder uses a **layered architecture**. Each layer may only depend on the ones below it:
+
+| Layer | Folder | Depends on | Holds |
+|-------|--------|-----------|-------|
+| Presentation | `screens/`, `widgets/` | everything below | What the user sees |
+| Application | `application/` | `domain/`, `infrastructure/` | The logic — the camera session and both detectors |
+| Domain | `domain/` | nothing | The shared data model, `FaceLipsResult` |
+| Infrastructure | `infrastructure/` | `domain/` | Talking to the outside world — the camera format and the native bridge |
+| Core | `core/` | — | Settings, colours, page transitions |
+
+**The practical benefit:** the detection logic in `application/` knows nothing about the camera or about Flutter widgets. That is why it can be unit-tested with fake frames on a machine with no phone and no camera — which is exactly what the tests in `test/` do.
 
 ---
 
@@ -370,6 +403,76 @@ flutter build apk --split-per-abi --release
 
 ---
 
+## Testing
+
+The project has **73 automated tests**. They run on any computer with Flutter — no phone, no camera and no emulator needed.
+
+```bash
+# Check the code for errors and style problems
+flutter analyze          # expected: "No issues found!"
+
+# Run every test
+flutter test             # expected: "+73: All tests passed!"
+
+# Run one file
+flutter test test/lip_letter_detector_test.dart
+
+# Run with a coverage report
+flutter test --coverage
+```
+
+### What is covered
+
+| Area | Tests | Examples of what is checked |
+|------|-------|------------------------------|
+| Lipsing detection | 10 | Wide-open mouth switches on at once; a slightly open mouth waits 3 frames; movement alone counts; losing the face fades to No |
+| Letter classification | 17 | One test per letter A–E; a smiling open mouth is E and not A; a strong pucker beats a weak smile; one odd frame cannot change the letter |
+| Mouth box geometry | 11 | Fractions map to the right pixels; the front camera mirrors correctly; a sideways frame is rotated; 6,000 random inputs keep mouth-like proportions |
+| Data model | 10 | `hasMouthBox` edge cases; `copyWith` does not mutate |
+| Settings | 5 | Defaults on a fresh install; save and reload; a partly filled store |
+| Settings screen | 6 | Sliders load saved values; Save writes and confirms; Reset does not write |
+| Onboarding | 6 | Page order; Next / Skip; Get Started on the last page |
+| Practice panel | 7 | "Matched!" appears only on a real match; tapping a chip reports the letter |
+| App start-up | 3 | The app opens on splash and moves on to onboarding |
+
+### What cannot be tested automatically
+
+Anything that needs real camera hardware: opening the camera, MediaPipe model loading, live face detection, and the YUV→JPEG conversion of a real frame. Those must be checked by running the app on a physical phone. See [`REFACTOR_REPORT.md` §6](REFACTOR_REPORT.md) for the manual checklist.
+
+---
+
+## Common Errors and Solutions
+
+| Error / symptom | Cause | Fix |
+|-----------------|-------|-----|
+| **`Value 'C:\Program Files\Android\Android Studio\jbr' ... does not exist`** when building | `android/gradle.properties` contains settings for one specific Windows machine | Open `android/gradle.properties` and **delete the three lines under "MACHINE-SPECIFIC SETTINGS"**. They are clearly marked. Gradle will then use your own JDK |
+| **Truststore / SSL error** during a Gradle build | The same machine-specific block points at a truststore file that only exists on that computer | Same fix — delete the marked lines |
+| **"Initialization failed: ... face_landmarker.task"** on the Home screen | The model file is missing | Make sure `android/app/src/main/assets/face_landmarker.task` and `ios/Runner/face_landmarker.task` both exist. Both are committed to this repository |
+| **"Face: Not detected"** that never changes | Running on an emulator, or poor lighting | Use a **physical phone**. Emulator virtual cameras show an animated scene, not a real face |
+| **Camera preview is black / app shows an error** | Camera permission was denied | Grant camera permission in the phone's app settings, then tap **Try Again** |
+| **"No camera found on this device."** | The device reports no cameras | Use a device with a front camera |
+| **Lipsing says Yes too easily or never** | The thresholds do not suit your face or lighting | Open **Settings** and adjust the sliders, then Save |
+| **App crashes on Android 15/16 in a release build** | R8 minification breaking MediaPipe's JNI | Already handled — `isMinifyEnabled = false` in `android/app/build.gradle.kts`. Do not re-enable it |
+| **`flutter pub get` resolves different versions** | `pubspec.lock` was ignored | Commit and use the `pubspec.lock` in this repository |
+
+---
+
+## Limitations
+
+Stated honestly — see [`REFACTOR_REPORT.md` §9](REFACTOR_REPORT.md) for the full list.
+
+- **Not speech recognition.** The app reports mouth *shapes*, not words. Different sounds share the same shape (for example "p", "b" and "m" all look like closed lips), so lips alone cannot identify a word.
+- **Rule-based, not machine-learned.** The thresholds were chosen by testing, not fitted to a dataset.
+- **No measured accuracy figure is claimed.** No labelled test set was collected, so quoting a percentage would be dishonest.
+- **Lighting, camera angle and distance affect the results.**
+- **One face only** (`setNumFaces(1)`).
+- **About 7 analyses per second**, a deliberate trade-off for battery life.
+- **Onboarding appears on every launch** — no "already seen" flag is saved yet.
+- **iOS has not been tested on a physical device.** The Swift bridge mirrors the Kotlin one and is structurally complete.
+- **`android/gradle.properties` is not portable** as committed — see the table above.
+
+---
+
 ## Screenshots
 
 Screenshots live in [`docs/screenshots/`](docs/screenshots/). They are used in the dissertation report. If PNG files are not in your clone yet, run the app on a device and capture them with [`docs/capture_screenshots.ps1`](docs/capture_screenshots.ps1).
@@ -406,6 +509,14 @@ Screenshots live in [`docs/screenshots/`](docs/screenshots/). They are used in t
 
 These are stored with keys in `DetectorSettings` and reload when you return from Settings.
 
+The slider ranges live next to the defaults in the same file, so every tuning number is in one place:
+
+| Setting | Slider range | Steps |
+|---------|--------------|-------|
+| Mouth-open threshold | `0.05` – `0.70` | 13 |
+| Motion threshold | `0.010` – `0.080` | 14 |
+| Letter min-score | `0.10` – `0.70` | 12 |
+
 ---
 
 ## Future Work
@@ -417,6 +528,10 @@ Ideas I would add with more time:
 - **User calibration** — short “hold B closed” tuning step per person
 - **Formal accuracy study** — labelled video clips and a confusion matrix
 - **Stronger iOS testing** — verify parity with the Android bridge on real iPhones
+- **Results history** — show the last few detected letters so progress is visible
+- **Make the Gradle build portable** — move the machine-specific lines out of `android/gradle.properties`
+
+Each idea is written up with its benefit, affected files, complexity and test plan in [`REFACTOR_REPORT.md` §8](REFACTOR_REPORT.md).
 
 ---
 
@@ -429,5 +544,7 @@ Ideas I would add with more time:
 
 ## Related Documentation
 
+- [`VIVA_CODE_GUIDE.md`](VIVA_CODE_GUIDE.md) — **code discussion guide** (English + Arabic): every important class explained, likely examiner questions with model answers, and 60-second / 3-minute / 10-minute presentation scripts
+- [`REFACTOR_REPORT.md`](REFACTOR_REPORT.md) — what was simplified and why, the feature preservation checklist, the full test report, and the honest list of untested areas
 - [`docs/LIPS_OFFLINE_DISSERTATION.md`](docs/LIPS_OFFLINE_DISSERTATION.md) — full report (requirements, testing, extra diagrams)
 - [`docs/README.md`](docs/README.md) — docs folder index

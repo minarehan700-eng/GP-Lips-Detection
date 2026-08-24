@@ -2,6 +2,13 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+/// The app name on the splash screen, with a moving colour gradient and
+/// letters that bob gently up and down.
+///
+/// Two animations run from one controller: a [ShaderMask] slides a gradient
+/// across the text, and each letter is offset by a sine wave. Giving each
+/// letter a slightly different point in that wave makes them ripple instead of
+/// moving together.
 class AnimatedBrandText extends StatefulWidget {
   const AnimatedBrandText({
     super.key,
@@ -10,6 +17,12 @@ class AnimatedBrandText extends StatefulWidget {
     this.weight = FontWeight.w800,
     this.letterSpacing = 0.6,
   });
+
+  /// How far one letter is bobbed up or down, in pixels.
+  static const double letterWaveHeight = 2.2;
+
+  /// How much later each following letter starts its bob, in radians.
+  static const double letterWavePhaseStep = 0.6;
 
   final String text;
   final double fontSize;
@@ -44,12 +57,15 @@ class _AnimatedBrandTextState extends State<AnimatedBrandText>
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, _) {
-        final t = _controller.value;
+        // Runs from 0.0 to 1.0 and back again, driving both animations.
+        final animationProgress = _controller.value;
         return ShaderMask(
           shaderCallback: (rect) {
+            // Both ends of the gradient slide right together, so the colours
+            // appear to travel across the word.
             return LinearGradient(
-              begin: Alignment(-1 + t * 2, -1),
-              end: Alignment(1 + t * 2, 1),
+              begin: Alignment(-1 + animationProgress * 2, -1),
+              end: Alignment(1 + animationProgress * 2, 1),
               colors: const [
                 Color(0xFF7CC7FF),
                 Color(0xFFD2A8FF),
@@ -61,11 +77,21 @@ class _AnimatedBrandTextState extends State<AnimatedBrandText>
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              for (var i = 0; i < widget.text.length; i++)
+              // `letterIndex * 0.6` delays each letter a little, turning one
+              // shared wave into a ripple along the word.
+              for (var letterIndex = 0;
+                  letterIndex < widget.text.length;
+                  letterIndex++)
                 Transform.translate(
-                  offset: Offset(0, math.sin((t * math.pi * 2) + i * 0.6) * 2.2),
+                  offset: Offset(
+                    0,
+                    math.sin((animationProgress * math.pi * 2) +
+                            letterIndex *
+                                AnimatedBrandText.letterWavePhaseStep) *
+                        AnimatedBrandText.letterWaveHeight,
+                  ),
                   child: Text(
-                    widget.text[i],
+                    widget.text[letterIndex],
                     style: TextStyle(
                       fontSize: widget.fontSize,
                       fontWeight: widget.weight,

@@ -7,6 +7,10 @@ import '../domain/face_lips_result.dart';
 import 'detection_ui.dart';
 import 'glass_card.dart';
 
+/// The big detected letter, its confidence, and the A–E practice chips.
+///
+/// This is the panel the user watches while practising: it shows what the app
+/// currently reads, and whether that equals the letter they are aiming for.
 class DetectedLetterPanel extends StatelessWidget {
   const DetectedLetterPanel({
     super.key,
@@ -15,13 +19,21 @@ class DetectedLetterPanel extends StatelessWidget {
     required this.onLetterTap,
   });
 
+  /// The latest detection result.
   final FaceLipsResult result;
+
+  /// The letter the user is practising, or null when none is chosen.
   final String? targetLetter;
+
+  /// Called with the tapped letter so the screen can set or clear the target.
   final ValueChanged<String> onLetterTap;
 
   @override
   Widget build(BuildContext context) {
     final displayLetter = result.detectedLetter;
+
+    // "Matched!" only makes sense when a target has actually been chosen —
+    // without the null check, two blank values would count as a match.
     final matched = targetLetter != null && displayLetter == targetLetter;
 
     return GlassCard(
@@ -40,7 +52,7 @@ class DetectedLetterPanel extends StatelessWidget {
             displayLetter ?? '—',
             style: Theme.of(context).textTheme.displayMedium?.copyWith(
                   color: matched
-                      ? const Color(0xFF4ADE80)
+                      ? AppTheme.successGreen
                       : displayLetter != null
                           ? AppTheme.brandTeal
                           : Colors.white38,
@@ -62,7 +74,7 @@ class DetectedLetterPanel extends StatelessWidget {
             Text(
               'Matched!',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: const Color(0xFF4ADE80),
+                    color: AppTheme.successGreen,
                     fontWeight: FontWeight.w600,
                   ),
             ),
@@ -89,6 +101,11 @@ class DetectedLetterPanel extends StatelessWidget {
   }
 }
 
+/// The raw mouth numbers: an open-mouth bar plus five smaller tiles.
+///
+/// Every value here comes straight from MediaPipe, converted from 0.0–1.0 into
+/// a percentage. Showing them makes the app's decisions explainable: if the
+/// letter looks wrong, these numbers say why.
 class MouthMetricsPanel extends StatelessWidget {
   const MouthMetricsPanel({
     super.key,
@@ -96,11 +113,16 @@ class MouthMetricsPanel extends StatelessWidget {
     required this.lipsing,
   });
 
+  /// The latest detection result.
   final FaceLipsResult result;
+
+  /// True when lipsing is detected; turns the progress bar green.
   final bool lipsing;
 
   @override
   Widget build(BuildContext context) {
+    // Clamped before scaling so an out-of-range value can never print
+    // something like "132%".
     final mouthPct = (result.mouthOpen.clamp(0.0, 1.0) * 100).round();
 
     return GlassCard(
@@ -129,7 +151,7 @@ class MouthMetricsPanel extends StatelessWidget {
               value: result.mouthOpen.clamp(0.0, 1.0),
               minHeight: 8,
               backgroundColor: Colors.white12,
-              color: lipsing ? const Color(0xFF4ADE80) : AppTheme.brandBlue,
+              color: lipsing ? AppTheme.successGreen : AppTheme.brandBlue,
             ),
           ),
           const SizedBox(height: 10),
