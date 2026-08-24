@@ -1,0 +1,15 @@
+flowchart LR
+    P["<b>Presentation</b><br/>screens/ + widgets/<br/><br/>Splash · Onboarding<br/>Home · Settings"]
+    A["<b>Application</b><br/>application/<br/><br/>LipsCameraSession<br/>LipsingDetector<br/>LipLetterDetector"]
+    I["<b>Infrastructure</b><br/>infrastructure/<br/><br/>CameraFrameEncoder<br/>MediaPipe bridge"]
+    D["<b>Domain</b><br/>domain/<br/><br/>FaceLipsResult"]
+    N["<b>Native</b><br/>android/ · ios/<br/><br/>MediaPipe<br/>Face Landmarker"]
+
+    P -->|depends on| A
+    A -->|depends on| I
+    A -->|uses| D
+    I -->|uses| D
+    I -->|MethodChannel| N
+
+    style D fill:#e8f4f4,stroke:#0b6a70,stroke-width:2px
+    style A fill:#eef2fb,stroke:#3b3a8f,stroke-width:2px

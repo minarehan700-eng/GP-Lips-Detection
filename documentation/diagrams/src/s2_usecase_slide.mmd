@@ -1,0 +1,38 @@
+flowchart LR
+    LEARNER(["Sign-language<br/>learner"])
+
+    subgraph G1["Practise"]
+        direction TB
+        UC2(["Start live detection"])
+        UC3(["See lipsing Yes/No"])
+        UC4(["See letter A-E"])
+    end
+
+    subgraph G2["Target practice"]
+        direction TB
+        UC5(["Choose target letter"])
+        UC6(["See Matched!"])
+        UC7(["View mouth metrics"])
+    end
+
+    subgraph G3["Configure"]
+        direction TB
+        UC8(["Adjust sensitivity"])
+        UC9(["Save settings"])
+        UC10(["Reset to defaults"])
+    end
+
+    subgraph G4["Support"]
+        direction TB
+        UC1(["Read onboarding"])
+        UC11(["Retry after error"])
+        UC12(["Grant camera permission"])
+    end
+
+    LEARNER --> G1
+    LEARNER --> G2
+    LEARNER --> G3
+    LEARNER --> G4
+    UC5 -.->|extends| UC6
+    UC8 -.->|includes| UC9
+    UC8 -.->|includes| UC10
