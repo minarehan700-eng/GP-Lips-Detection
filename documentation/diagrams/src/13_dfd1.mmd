@@ -1,0 +1,30 @@
+flowchart TB
+    CAM(["Front camera"])
+    USER(["User"])
+    STORE[("D1  Detector settings")]
+
+    P1["<b>1.0</b><br/>Capture and<br/>throttle frames"]
+    P2["<b>2.0</b><br/>Convert frame<br/>to JPEG"]
+    P3["<b>3.0</b><br/>Detect face and<br/>extract mouth data"]
+    P4["<b>4.0</b><br/>Decide lipsing<br/>Yes / No"]
+    P5["<b>5.0</b><br/>Classify mouth<br/>shape A-E"]
+    P6["<b>6.0</b><br/>Render results<br/>and overlay"]
+    P7["<b>7.0</b><br/>Manage<br/>settings"]
+
+    CAM -->|raw YUV420 frame| P1
+    P1 -->|accepted frame<br/>~7 per second| P2
+    P2 -->|JPEG bytes| P3
+    P3 -->|blendshapes +<br/>mouth box| P4
+    P4 -->|result + isLipsing| P5
+    P5 -->|result + letter<br/>+ confidence| P6
+    P6 -->|preview, cards,<br/>letter, metrics| USER
+
+    USER -->|slider values| P7
+    P7 -->|write| STORE
+    STORE -->|read| P7
+    P7 -->|thresholds| P4
+    P7 -->|min score| P5
+    USER -->|target letter| P6
+
+    style P4 fill:#e8f4f4,stroke:#0b6a70
+    style P5 fill:#e8f4f4,stroke:#0b6a70

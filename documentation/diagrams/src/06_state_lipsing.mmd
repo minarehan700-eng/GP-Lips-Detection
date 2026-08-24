@@ -1,0 +1,30 @@
+stateDiagram-v2
+    direction LR
+    [*] --> NotLipsing
+
+    state "Lipsing: No" as NotLipsing
+    state "Lipsing: Yes" as Lipsing
+    state "Building up" as Building
+    state "Fading out" as Fading
+
+    NotLipsing --> Building : frame is active<br/>(open OR moving)
+    Building --> Building : still active<br/>streak < 3
+    Building --> Lipsing : streak reaches 3
+    Building --> NotLipsing : frame not active<br/>streak resets to 0
+    NotLipsing --> Lipsing : mouthOpen > 0.35<br/>(instant-on shortcut)
+
+    Lipsing --> Fading : frame not active
+    Fading --> Fading : still not active<br/>streak < 3
+    Fading --> NotLipsing : streak reaches 3
+    Fading --> Lipsing : frame active again<br/>streak resets to 0
+
+    Lipsing --> Fading : no face detected
+    Building --> NotLipsing : no face detected<br/>history cleared
+
+    note right of Building
+        Hysteresis: the displayed
+        answer only changes after
+        3 frames in a row agree.
+        This is what stops the
+        label flickering.
+    end note

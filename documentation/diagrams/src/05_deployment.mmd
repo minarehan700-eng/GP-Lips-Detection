@@ -1,0 +1,33 @@
+flowchart TB
+    subgraph DEV["Developer machine"]
+        VS["VS Code + Flutter extension"]
+        SDK["Flutter SDK 3.38.10<br/>Dart 3.10.9"]
+        ASDK["Android SDK<br/>Gradle 8.14 · AGP 8.11.1 · JDK 17"]
+        VS --> SDK
+        SDK --> ASDK
+    end
+
+    APK{{"app-release.apk<br/>built artifact"}}
+    ASDK -->|flutter build apk --release| APK
+
+    subgraph DEVICE["Android device — Android 7.0+ / minSdk 24"]
+        subgraph APP["Lips Offline application process"]
+            DART["Flutter engine<br/>compiled Dart"]
+            JNI["MediaPipe native libs<br/>tasks-vision 0.10.29"]
+            ASSET[("assets/face_landmarker.task")]
+        end
+        HW(["Front camera"])
+        SP[("App private storage<br/>SharedPreferences")]
+    end
+
+    APK -->|install via USB or file| APP
+    DART <-->|MethodChannel| JNI
+    JNI --> ASSET
+    HW -->|YUV420 frames| DART
+    DART --> SP
+
+    NET{{"No network connection required<br/>at any point after install"}}
+    APP -.->|never contacts| NET
+
+    style NET fill:#e8f4f4,stroke:#0b6a70,stroke-dasharray: 4 4
+    style APK fill:#eef2fb,stroke:#3b3a8f

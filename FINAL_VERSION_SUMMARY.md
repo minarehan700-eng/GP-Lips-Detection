@@ -31,8 +31,9 @@
 | 18 | Dissertation as a Word document | ✅ Done | `3_PRESENTATION_AND_REPORT/` |
 | 19 | One-page printable revision sheet | ✅ Done | `3_PRESENTATION_AND_REPORT/` |
 | 20 | Bilingual handbook (English + Arabic) | ✅ Done | Published as an online artifact |
-| 21 | Setup / run / APK instructions | ✅ Done | §6, §7, `START_HERE.txt`, README |
-| 22 | Final APK file | ❌ **Not produced** | See §8 — you must build it |
+| 21 | **All UML / SE / architecture diagrams** | ✅ Done | `documentation/DIAGRAMS.md` + 15 PNGs |
+| 22 | Setup / run / APK instructions | ✅ Done | §6, §7, `START_HERE.txt`, README |
+| 23 | Final APK file | ❌ **Not produced** | See §8 — you must build it |
 
 ### One request deliberately not applied, and why
 
@@ -58,6 +59,9 @@ If you want the restructure, it should be done **after** the defence.
 
 | File | Purpose |
 |------|---------|
+| `documentation/DIAGRAMS.md` | 15 diagrams explained, with likely questions |
+| `documentation/diagrams/*.png` | 15 rendered diagrams (class, package, component, deployment, 2 state machines, 2 activity, 2 sequence, 2 DFD, use case, storage) |
+| `documentation/diagrams/src/*.mmd` | Editable Mermaid sources for every diagram |
 | `documentation/BEFORE_AFTER_COMPARISON.md` | Old vs new, scores, 6 code examples |
 | `documentation/CODE_DISCUSSION_GUIDE.md` | 60-second pitch, file-by-file, 35 Q&A, mock viva |
 | `documentation/LINE_BY_LINE_GUIDE.md` | 12 code blocks explained line by line, EN + AR |

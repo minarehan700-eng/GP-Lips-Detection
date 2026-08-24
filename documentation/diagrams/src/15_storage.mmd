@@ -1,0 +1,23 @@
+flowchart LR
+    subgraph PREFS["SharedPreferences — key / value store"]
+        direction TB
+        K1["<b>mouth_open_threshold</b><br/>double · default 0.25<br/>range 0.05 – 0.70"]
+        K2["<b>motion_threshold</b><br/>double · default 0.035<br/>range 0.010 – 0.080"]
+        K3["<b>letter_min_score</b><br/>double · default 0.28<br/>range 0.10 – 0.70"]
+    end
+
+    DS["DetectorSettings<br/>load() / save()"]
+    LIP["LipsingDetector"]
+    LET["LipLetterDetector"]
+
+    DS <--> K1
+    DS <--> K2
+    DS <--> K3
+    K1 --> LIP
+    K2 --> LIP
+    K3 --> LET
+
+    NOTE["No relational database is used.<br/>The app stores only three numbers,<br/>so an ERD does not apply."]
+
+    style NOTE fill:#fdf3e2,stroke:#8c5a00
+    style PREFS fill:#e8f4f4,stroke:#0b6a70

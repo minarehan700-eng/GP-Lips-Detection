@@ -1,0 +1,31 @@
+stateDiagram-v2
+    [*] --> Loading : HomeScreen created
+
+    state "Loading" as Loading
+    state "Error" as Error
+    state "Running" as Running
+
+    state Loading {
+        [*] --> LoadSettings
+        LoadSettings : "Loading settings..."
+        LoadModel : "Loading face landmarker..."
+        StartCamera : "Starting camera..."
+        LoadSettings --> LoadModel
+        LoadModel --> StartCamera
+        StartCamera --> [*] : "Ready"
+    }
+
+    state Running {
+        [*] --> WaitingFrame
+        WaitingFrame --> Throttled : frame arrives too soon
+        Throttled --> WaitingFrame : skip
+        WaitingFrame --> Busy : frame accepted
+        Busy --> Analysing : encode to JPEG
+        Analysing --> Updating : MediaPipe replies
+        Updating --> WaitingFrame : setState redraws
+    }
+
+    Loading --> Running : camera stream started
+    Loading --> Error : model missing OR<br/>permission denied OR<br/>no camera
+    Error --> Loading : user taps "Try Again"
+    Running --> [*] : screen disposed<br/>camera released
