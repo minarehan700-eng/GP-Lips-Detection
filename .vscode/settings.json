@@ -1,0 +1,50 @@
+{
+  // ------------------------------------------------------------------------
+  //  Why this file exists
+  //
+  //  If "Extension Pack for Java" is installed, it sees the android/ folder,
+  //  decides this is a Gradle project and imports it on its own — using
+  //  whatever JDK it finds first. When that JDK is Java 8, VS Code shows:
+  //
+  //      Could not run phased build action using connection to Gradle
+  //      distribution '.../gradle-8.14-all.zip'
+  //      ...
+  //      Dependency requires at least JVM runtime version 11.
+  //      This build uses a Java 8 JVM.
+  //
+  //  That import is not part of building this app. `flutter run` and
+  //  `flutter build apk` drive Gradle themselves and never go through it, so
+  //  the popup is noise from a second, unrelated consumer of the build.
+  //
+  //  Turning the import off removes the error and costs nothing here: there
+  //  is no Java source in this project to get IntelliSense for. The Android
+  //  side is Kotlin (android/app/src/main/kotlin/), which this setting does
+  //  not affect.
+  //
+  //  NOTE: this silences the IDE only. Gradle itself still needs JDK 17 —
+  //  see "Common Errors and Solutions" in README.md for that half of the fix.
+  // ------------------------------------------------------------------------
+  "java.import.gradle.enabled": false,
+  "java.configuration.updateBuildConfiguration": "disabled",
+
+  // Keep generated build output out of the file explorer and out of search
+  // results, so Ctrl+P and Ctrl+Shift+F only ever show real source files.
+  "files.exclude": {
+    "**/.dart_tool": true,
+    "**/build": true
+  },
+  "search.exclude": {
+    "**/.dart_tool": true,
+    "**/build": true,
+    "**/pubspec.lock": true
+  },
+
+  "dart.lineLength": 100,
+  "[dart]": {
+    "editor.formatOnSave": true,
+    "editor.rulers": [100],
+    "editor.selectionHighlight": false,
+    "editor.tabCompletion": "onlySnippets",
+    "editor.wordBasedSuggestions": "off"
+  }
+}
