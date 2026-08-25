@@ -444,10 +444,15 @@ Anything that needs real camera hardware: opening the camera, MediaPipe model lo
 
 ## Common Errors and Solutions
 
+> **Before anything else, run the setup script once.** `setup_windows.bat` on Windows, or
+> `./setup_macos_linux.sh` on macOS and Linux. It fixes the first three rows of this table
+> automatically, for whatever machine it is run on.
+
 | Error / symptom | Cause | Fix |
 |-----------------|-------|-----|
-| **`Value 'C:\Program Files\Android\Android Studio\jbr' ... does not exist`** when building | `android/gradle.properties` contains settings for one specific Windows machine | Open `android/gradle.properties` and **delete the three lines under "MACHINE-SPECIFIC SETTINGS"**. They are clearly marked. Gradle will then use your own JDK |
-| **Truststore / SSL error** during a Gradle build | The same machine-specific block points at a truststore file that only exists on that computer | Same fix — delete the marked lines |
+| **`Settings file 'android\settings.gradle.kts' line: 5` … `local.properties (The system cannot find the file specified)`** | `android/local.properties` records where Flutter lives on **this** computer. It is deliberately not in version control, and it is only written the first time the Flutter tool runs — but an IDE syncs Gradle the moment you open the folder, which is sooner than that | Run **`flutter pub get`** once in the project root (the folder holding `pubspec.yaml`), then reload the window. `setup_windows.bat` does this for you. `android/settings.gradle.kts` now also falls back to the `FLUTTER_ROOT` environment variable, and prints this instruction instead of a stack trace |
+| **`Value 'C:\Program Files\Android\Android Studio\jbr' ... does not exist`** when building | `android/gradle.properties` contains settings for one specific Windows machine | Run the setup script — it comments the line out when the folder is not there. By hand: open `android/gradle.properties` and **delete the three lines under "MACHINE-SPECIFIC SETTINGS"**. If Gradle then complains about the Java version, run `flutter config --jdk-dir "<path to a JDK 17>"` |
+| **Truststore / SSL error** during a Gradle build | The same machine-specific block points at a truststore file that only exists on that computer | Same fix — the setup script handles it, or delete the marked lines by hand |
 | **"Initialization failed: ... face_landmarker.task"** on the Home screen | The model file is missing | Make sure `android/app/src/main/assets/face_landmarker.task` and `ios/Runner/face_landmarker.task` both exist. Both are committed to this repository |
 | **"Face: Not detected"** that never changes | Running on an emulator, or poor lighting | Use a **physical phone**. Emulator virtual cameras show an animated scene, not a real face |
 | **Camera preview is black / app shows an error** | Camera permission was denied | Grant camera permission in the phone's app settings, then tap **Try Again** |
