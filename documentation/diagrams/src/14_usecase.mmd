@@ -1,0 +1,38 @@
+flowchart LR
+    LEARNER(["Sign-language<br/>learner"])
+    CAMERA(["Front camera<br/>«device»"])
+    MP(["MediaPipe<br/>«library»"])
+
+    subgraph SYS["Lips Offline"]
+        UC1(["Read the<br/>onboarding guide"])
+        UC2(["Start live<br/>detection"])
+        UC3(["See whether<br/>lipsing is detected"])
+        UC4(["See the detected<br/>letter A-E"])
+        UC5(["Choose a practice<br/>target letter"])
+        UC6(["See Matched!<br/>confirmation"])
+        UC7(["View mouth<br/>measurements"])
+        UC8(["Adjust detection<br/>sensitivity"])
+        UC9(["Save settings"])
+        UC10(["Reset to defaults"])
+        UC11(["Retry after<br/>an error"])
+        UC12(["Grant camera<br/>permission"])
+    end
+
+    LEARNER --> UC1
+    LEARNER --> UC2
+    LEARNER --> UC3
+    LEARNER --> UC4
+    LEARNER --> UC5
+    LEARNER --> UC7
+    LEARNER --> UC8
+    LEARNER --> UC11
+    LEARNER --> UC12
+
+    UC5 -.->|extends| UC6
+    UC8 -.->|includes| UC9
+    UC8 -.->|includes| UC10
+    UC2 -.->|includes| UC12
+
+    UC2 --> CAMERA
+    UC3 --> MP
+    UC4 --> MP

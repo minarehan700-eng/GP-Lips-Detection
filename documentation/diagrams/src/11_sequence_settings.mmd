@@ -1,0 +1,41 @@
+sequenceDiagram
+    autonumber
+    actor User
+    participant Home as HomeScreen
+    participant Set as SettingsScreen
+    participant DS as DetectorSettings
+    participant Prefs as SharedPreferences
+    participant Session as LipsCameraSession
+
+    User->>Home: taps the gear icon
+    Home->>Set: Navigator.push(SettingsScreen)
+    Set->>DS: load()
+    DS->>Prefs: getDouble x3
+    Prefs-->>DS: saved values or defaults
+    DS-->>Set: DetectorSettings
+    Set->>User: three sliders shown
+
+    User->>Set: drags a slider
+    Set->>Set: setState with copyWith
+    Note over Set: change held in memory only,<br/>nothing written yet
+
+    alt user taps Save
+        User->>Set: taps "Save Settings"
+        Set->>DS: save()
+        DS->>Prefs: setDouble x3
+        Prefs-->>DS: written
+        Set->>User: SnackBar "Settings saved"
+    else user taps Reset
+        User->>Set: taps "Reset to defaults"
+        Set->>Set: sliders back to defaults
+        Note over Set: still nothing written
+    end
+
+    User->>Set: presses Back
+    Set-->>Home: pop
+    Home->>Session: applyDetectorSettings()
+    Session->>DS: load()
+    DS-->>Session: latest thresholds
+    Session->>Session: rebuild LipsingDetector<br/>and LipLetterDetector
+    Note over Session: fresh detectors also clear<br/>stale frame history
+    Home->>User: detection now uses new values

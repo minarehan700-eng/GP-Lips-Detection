@@ -1,0 +1,119 @@
+classDiagram
+    direction TB
+
+    class StatelessWidget {
+        <<Flutter>>
+    }
+    class StatefulWidget {
+        <<Flutter>>
+    }
+    class CustomPainter {
+        <<Flutter>>
+    }
+
+    class LipsOfflineApp {
+        +build(context) Widget
+    }
+    class SplashScreen {
+        +splashDuration
+        -Timer _splashTimer
+        -_goOnboarding() void
+    }
+    class OnboardingScreen {
+        -PageController _pageController
+        -int _currentPage
+        -_onNext() void
+        -_goHome() void
+    }
+    class HomeScreen {
+        -LipsCameraSession _session
+        -bool _initializing
+        -String _targetLetter
+        -_scheduleSetup() void
+        -_setup() Future
+        -_openSettings() Future
+        -_retrySetup() Future
+        -_toggleTargetLetter(letter) void
+        -_buildBody(context) Widget
+    }
+    class SettingsScreen {
+        -DetectorSettings _settings
+        -bool _loading
+        -_load() Future
+        -_save() Future
+        -_resetToDefaults() void
+    }
+
+    class LipsCameraPreview {
+        +CameraController controller
+        +FaceLipsResult result
+        +bool isFrontCamera
+        +bool lipsing
+        -_previewAspectRatio() double
+        -_fitPreview() Size
+        -_buildMouthOverlay() Widget
+    }
+    class MouthBoxPainter {
+        +double minX
+        +double minY
+        +double maxX
+        +double maxY
+        +int imageWidth
+        +int imageHeight
+        +bool isFrontCamera
+        +bool active
+        +paint(canvas, size) void
+        +computeMouthRect() Rect
+        +shouldRepaint(old) bool
+        -_shouldSwapAxes() bool
+        -_toScreenPoint() Offset
+    }
+    class DetectedLetterPanel {
+        +FaceLipsResult result
+        +String targetLetter
+        +onLetterTap
+    }
+    class MouthMetricsPanel {
+        +FaceLipsResult result
+        +bool lipsing
+    }
+    class DetectionStatusCard
+    class LetterChip
+    class MouthMetricTile
+    class GlassCard
+    class GradientBackground
+    class AppTheme {
+        +dark() ThemeData
+    }
+    class AppNavigation {
+        +fadeTransition(page) Route
+    }
+
+    StatelessWidget <|-- LipsOfflineApp
+    StatefulWidget <|-- SplashScreen
+    StatefulWidget <|-- OnboardingScreen
+    StatefulWidget <|-- HomeScreen
+    StatefulWidget <|-- SettingsScreen
+    StatelessWidget <|-- LipsCameraPreview
+    StatelessWidget <|-- DetectedLetterPanel
+    StatelessWidget <|-- MouthMetricsPanel
+    StatelessWidget <|-- DetectionStatusCard
+    StatelessWidget <|-- LetterChip
+    StatelessWidget <|-- MouthMetricTile
+    StatelessWidget <|-- GlassCard
+    StatelessWidget <|-- GradientBackground
+    CustomPainter <|-- MouthBoxPainter
+
+    LipsOfflineApp --> SplashScreen : home
+    SplashScreen --> OnboardingScreen : pushReplacement
+    OnboardingScreen --> HomeScreen : pushReplacement
+    HomeScreen --> SettingsScreen : push
+    HomeScreen *-- LipsCameraPreview
+    HomeScreen *-- DetectedLetterPanel
+    HomeScreen *-- MouthMetricsPanel
+    HomeScreen *-- DetectionStatusCard
+    LipsCameraPreview *-- MouthBoxPainter
+    DetectedLetterPanel *-- LetterChip
+    MouthMetricsPanel *-- MouthMetricTile
+    LipsOfflineApp ..> AppTheme
+    SplashScreen ..> AppNavigation

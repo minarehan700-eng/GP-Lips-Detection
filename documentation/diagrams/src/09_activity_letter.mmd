@@ -1,0 +1,49 @@
+flowchart TB
+    S([New frame with mouth data]) --> F{Face detected?}
+    F -->|No| CLR[Reset window<br/>clear displayed letter]
+    CLR --> DASH([Show dash - no letter])
+
+    F -->|Yes| EXT[Extract 6 features<br/>blend jawOpen with box shape]
+    EXT --> PUSH[Add to window<br/>keep last 5 frames]
+    PUSH --> MED[Take median of each feature]
+    MED --> R1{Smiling clearly<br/>AND beats roundness?}
+
+    R1 -->|Yes| SC1{score >= minScore?}
+    SC1 -->|Yes| E([Letter E])
+    SC1 -->|No| R2
+    R1 -->|No| R2{Roundness >= 0.22?}
+
+    R2 -->|Yes| SC2{score >= minScore?}
+    SC2 -->|Yes| C([Letter C])
+    SC2 -->|No| R3
+    R2 -->|No| R3{Barely open AND<br/>pressed or shut?}
+
+    R3 -->|Yes| SC3{score >= minScore?}
+    SC3 -->|Yes| B([Letter B])
+    SC3 -->|No| R4
+    R3 -->|No| R4{Wide open, not smiling,<br/>not rounded?}
+
+    R4 -->|Yes| SC4{score >= minScore?}
+    SC4 -->|Yes| A([Letter A])
+    SC4 -->|No| R5
+    R4 -->|No| R5{Slightly open<br/>0.16 to 0.44?}
+
+    R5 -->|Yes| SC5{score >= minScore?}
+    SC5 -->|Yes| D([Letter D])
+    SC5 -->|No| NONE([No match - show dash])
+    R5 -->|No| NONE
+
+    E --> VOTE[Count vote for this letter]
+    C --> VOTE
+    B --> VOTE
+    A --> VOTE
+    D --> VOTE
+    VOTE --> HYST{Same letter for<br/>2 frames in a row?}
+    HYST -->|Yes| SHOW([Display the letter])
+    HYST -->|No| KEEP([Keep showing previous letter])
+
+    style R1 fill:#e8f4f4,stroke:#0b6a70
+    style R2 fill:#e8f4f4,stroke:#0b6a70
+    style R3 fill:#e8f4f4,stroke:#0b6a70
+    style R4 fill:#e8f4f4,stroke:#0b6a70
+    style R5 fill:#e8f4f4,stroke:#0b6a70

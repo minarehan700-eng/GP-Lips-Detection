@@ -1,0 +1,46 @@
+classDiagram
+    direction LR
+
+    class FaceLipsResult {
+        +bool faceDetected
+        +double mouthOpen
+        +bool isLipsing
+        +String detectedLetter
+        +double letterConfidence
+        +copyWith() FaceLipsResult
+    }
+    class LipsCameraSession {
+        +FaceLipsResult result
+        +String initPhase
+        +initialize(onUpdate)
+        -_onFrame(image)
+    }
+    class LipsingDetector {
+        +double mouthOpenThreshold
+        +double motionThreshold
+        +update(raw) FaceLipsResult
+    }
+    class LipLetterDetector {
+        +double minScore
+        +update(raw) FaceLipsResult
+        -_classify(features)
+    }
+    class MediaPipeFaceLandmarkExtractor {
+        +processFrame(bytes)
+    }
+    class CameraFrameEncoder {
+        +encodeToJpeg(image)
+    }
+    class DetectorSettings {
+        +load() Future
+        +save() Future
+    }
+
+    LipsCameraSession *-- LipsingDetector
+    LipsCameraSession *-- LipLetterDetector
+    LipsCameraSession *-- MediaPipeFaceLandmarkExtractor
+    LipsCameraSession *-- CameraFrameEncoder
+    LipsCameraSession ..> DetectorSettings
+    MediaPipeFaceLandmarkExtractor ..> FaceLipsResult : creates
+    LipsingDetector ..> FaceLipsResult : adds isLipsing
+    LipLetterDetector ..> FaceLipsResult : adds letter

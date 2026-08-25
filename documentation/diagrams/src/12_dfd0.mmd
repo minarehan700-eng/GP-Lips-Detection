@@ -1,0 +1,13 @@
+flowchart LR
+    USER(["User<br/>(sign-language learner)"])
+    CAM(["Front camera<br/>(external entity)"])
+    SYS["<b>0</b><br/>Lips Offline<br/>Detection System"]
+    STORE[("D1  Detector settings")]
+
+    CAM -->|camera frames| SYS
+    USER -->|threshold adjustments<br/>target letter selection| SYS
+    SYS -->|face detected Yes/No<br/>lipsing Yes/No<br/>letter A-E + confidence<br/>mouth box overlay<br/>mouth metrics| USER
+    SYS -->|save thresholds| STORE
+    STORE -->|load thresholds| SYS
+
+    style SYS fill:#e8f4f4,stroke:#0b6a70,stroke-width:2px

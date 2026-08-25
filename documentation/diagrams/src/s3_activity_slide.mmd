@@ -1,0 +1,20 @@
+flowchart LR
+    START([Frame]) --> G1{Busy?}
+    G1 -->|Yes| SKIP[/Discard/]
+    G1 -->|No| G2{&lt; 150 ms?}
+    G2 -->|Yes| SKIP
+    G2 -->|No| ENC[Convert<br/>to JPEG]
+    ENC --> MP[Native<br/>MediaPipe]
+    MP --> F{Face<br/>found?}
+    F -->|No| ZERO[No-face result<br/>all zeros]
+    F -->|Yes| EXT[6 blendshapes<br/>+ mouth box]
+    ZERO --> LIP
+    EXT --> LIP[LipsingDetector<br/>adds isLipsing]
+    LIP --> LET[LipLetterDetector<br/>adds letter]
+    LET --> UI[setState<br/>redraw]
+    UI --> FIN[/finally:<br/>clear flag/]
+    FIN --> END([Next frame])
+
+    style G1 fill:#eef2fb,stroke:#3b3a8f
+    style G2 fill:#eef2fb,stroke:#3b3a8f
+    style FIN fill:#fdf3e2,stroke:#8c5a00

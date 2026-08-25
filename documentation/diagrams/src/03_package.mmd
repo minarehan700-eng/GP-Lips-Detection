@@ -1,0 +1,42 @@
+flowchart TB
+    subgraph PRES["presentation — screens/ + widgets/"]
+        direction LR
+        P1[screens]
+        P2[widgets]
+    end
+
+    subgraph APP["application/ — the logic"]
+        direction LR
+        A1[LipsCameraSession]
+        A2[LipsingDetector]
+        A3[LipLetterDetector]
+    end
+
+    subgraph INFRA["infrastructure/ — outside world"]
+        direction LR
+        I1[CameraFrameEncoder]
+        I2[MediaPipeFaceLandmarkExtractor]
+    end
+
+    subgraph CORE["core/ — settings, theme, navigation"]
+        direction LR
+        C1[DetectorSettings]
+        C2[AppTheme]
+        C3[AppNavigation]
+    end
+
+    subgraph DOM["domain/ — data only"]
+        D1[FaceLipsResult]
+    end
+
+    PRES -->|depends on| APP
+    PRES -->|depends on| CORE
+    PRES -->|depends on| DOM
+    APP -->|depends on| INFRA
+    APP -->|depends on| CORE
+    APP -->|depends on| DOM
+    INFRA -->|depends on| DOM
+    CORE -.->|no dependency| DOM
+
+    style DOM fill:#e8f4f4,stroke:#0b6a70
+    style APP fill:#eef2fb,stroke:#3b3a8f

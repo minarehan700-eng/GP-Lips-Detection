@@ -1,0 +1,38 @@
+flowchart TB
+    START([Camera delivers a frame]) --> G1{Previous frame<br/>still processing?}
+    G1 -->|Yes| SKIP1[/Discard frame/]
+    SKIP1 --> END1([Return])
+
+    G1 -->|No| G2{Less than<br/>150 ms since<br/>last frame?}
+    G2 -->|Yes| SKIP2[/Discard frame/]
+    SKIP2 --> END1
+
+    G2 -->|No| LOCK[Set _isProcessing = true<br/>record timestamp]
+    LOCK --> FMT{Frame format?}
+    FMT -->|YUV420| YUV[Convert YUV to RGB<br/>using BT.601 coefficients]
+    FMT -->|BGRA| BGRA[Relabel bytes as image]
+    FMT -->|Other| NULLJ[/Return null/]
+    NULLJ --> UNLOCK
+
+    YUV --> JPEG[Encode JPEG quality 92]
+    BGRA --> JPEG
+    JPEG --> SEND[Send over MethodChannel<br/>lips/offline/face]
+    SEND --> NATIVE[Native MediaPipe<br/>runs face detection]
+    NATIVE --> FACE{Face found?}
+
+    FACE -->|No| EMPTY[Build no-face result<br/>all values zero]
+    FACE -->|Yes| EXTRACT[Extract 6 mouth blendshapes<br/>and 6 lip landmarks]
+    EXTRACT --> BOX[Compute mouth bounding box]
+    BOX --> PARSE[Parse reply into FaceLipsResult]
+    EMPTY --> PARSE
+
+    PARSE --> LIP[LipsingDetector.update<br/>adds isLipsing]
+    LIP --> LET[LipLetterDetector.update<br/>adds letter + confidence]
+    LET --> STORE[Store as session result]
+    STORE --> REDRAW[onUpdate then setState<br/>screen redraws]
+    REDRAW --> UNLOCK[finally:<br/>_isProcessing = false]
+    UNLOCK --> END2([Ready for next frame])
+
+    style UNLOCK fill:#fdf3e2,stroke:#8c5a00
+    style G1 fill:#eef2fb,stroke:#3b3a8f
+    style G2 fill:#eef2fb,stroke:#3b3a8f

@@ -1,0 +1,37 @@
+flowchart TB
+    subgraph PHONE["Mobile device"]
+        subgraph FLUTTER["Flutter application (Dart)"]
+            UI[["UI Component<br/>screens + widgets"]]
+            SESSION[["Detection Orchestrator<br/>LipsCameraSession"]]
+            LOGIC[["Detection Logic<br/>LipsingDetector + LipLetterDetector"]]
+            ENC[["Frame Encoder<br/>CameraFrameEncoder"]]
+            BRIDGE[["Platform Bridge<br/>MediaPipeFaceLandmarkExtractor"]]
+            STORE[["Settings Store<br/>DetectorSettings"]]
+        end
+
+        subgraph NATIVE["Native layer"]
+            KOT[["Android Bridge<br/>FaceLandmarkerBridge.kt"]]
+            SWI[["iOS Bridge<br/>FaceLandmarkerBridge.swift"]]
+            MP[["MediaPipe Tasks Vision"]]
+        end
+
+        CAM(["Camera hardware"])
+        PREFS[("SharedPreferences")]
+        MODEL[("face_landmarker.task<br/>3.6 MB bundled asset")]
+    end
+
+    UI -->|reads result| SESSION
+    SESSION -->|runs| LOGIC
+    SESSION -->|converts frame| ENC
+    SESSION -->|requests detection| BRIDGE
+    SESSION -->|loads thresholds| STORE
+    CAM -->|frame stream| SESSION
+    BRIDGE -->|MethodChannel<br/>lips/offline/face| KOT
+    BRIDGE -->|MethodChannel<br/>lips/offline/face| SWI
+    KOT --> MP
+    SWI --> MP
+    MP --> MODEL
+    STORE --> PREFS
+
+    style MODEL fill:#e8f4f4,stroke:#0b6a70
+    style CAM fill:#fdf3e2,stroke:#8c5a00

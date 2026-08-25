@@ -1,0 +1,44 @@
+sequenceDiagram
+    autonumber
+    actor User
+    participant Home as HomeScreen
+    participant Session as LipsCameraSession
+    participant Settings as DetectorSettings
+    participant Ext as MediaPipeExtractor
+    participant Native as FaceLandmarkerBridge
+    participant Cam as Camera plugin
+
+    User->>Home: opens Home screen
+    Home->>Home: addPostFrameCallback
+    Note over Home: waits one frame so the<br/>spinner is visible first
+    Home->>Session: initialize(onUpdate)
+
+    Session->>Session: initPhase = "Loading settings..."
+    Session->>Settings: load()
+    Settings-->>Session: thresholds
+    Session->>Session: rebuild both detectors
+
+    Session->>Session: initPhase = "Loading face landmarker..."
+    Session->>Ext: initialize()
+    Ext->>Native: initializeFaceLandmarker
+    Note over Native: runs on the MAIN thread<br/>(Android 15/16 crash fix)
+    Native->>Native: load face_landmarker.task
+    alt model file missing
+        Native-->>Ext: error model_missing
+        Ext-->>Session: throws Exception
+        Session->>Home: error set
+        Home->>User: error screen + Try Again
+    else model loaded
+        Native-->>Ext: success
+    end
+
+    Session->>Session: initPhase = "Starting camera..."
+    Session->>Cam: availableCameras()
+    Cam-->>Session: camera list
+    Session->>Cam: initialize front camera
+    Note over Session,Cam: tries veryHigh, then high,<br/>then medium
+    Cam-->>Session: ready
+    Session->>Cam: startImageStream(_onFrame)
+    Session->>Session: initPhase = "Ready"
+    Session->>Home: onUpdate()
+    Home->>User: live preview appears

@@ -1,0 +1,155 @@
+classDiagram
+    direction LR
+
+    class FaceLipsResult {
+        +bool faceDetected
+        +double mouthOpen
+        +double mouthPucker
+        +double smile
+        +double mouthClose
+        +double mouthFunnel
+        +double mouthStretch
+        +String detectedLetter
+        +double letterConfidence
+        +bool isLipsing
+        +int ts
+        +double mouthMinX
+        +double mouthMinY
+        +double mouthMaxX
+        +double mouthMaxY
+        +bool hasMouthBox
+        +copyWith() FaceLipsResult
+    }
+
+    class LipsCameraSession {
+        +CameraController camera
+        +String cameraResolutionLabel
+        +bool isFrontCamera
+        +int frameImageWidth
+        +int frameImageHeight
+        +String initPhase
+        +String error
+        +FaceLipsResult result
+        -bool _isProcessing
+        -DateTime _lastProcessed
+        +initialize(onUpdate) Future
+        +applyDetectorSettings() Future
+        +reset(onUpdate) Future
+        +dispose() Future
+        -_onFrame(image, onUpdate) Future
+        -_pickFrontCamera() Future
+        -_openCamera(description) Future
+        -_describeResolution(controller) String
+    }
+
+    class LipsingDetector {
+        +int historySize
+        +double mouthOpenThreshold
+        +double motionThreshold
+        +int hysteresisFrames
+        +bool isLipsing
+        -List~MouthSample~ _recentSamples
+        -bool _isLipsing
+        -int _activeFrameStreak
+        -int _inactiveFrameStreak
+        +update(raw) FaceLipsResult
+        +reset() void
+        -_handleMissingFace() bool
+        -_remember(raw) void
+        -_countActiveFrame(mouthOpen) void
+        -_countInactiveFrame() void
+        -_averageMouthMovement() double
+    }
+
+    class LipLetterDetector {
+        +double minScore
+        +int hysteresisFrames
+        +int windowSize
+        +List~String~ supportedLetters
+        -List~MouthFeatures~ _recentFeatures
+        -String _displayedLetter
+        -String _candidateLetter
+        -int _candidateFrameStreak
+        +update(raw) FaceLipsResult
+        +reset() void
+        -_extractFeatures(raw) MouthFeatures
+        -_medianFeatures() MouthFeatures
+        -_median(values) double
+        -_classify(features) LetterMatch
+        -_countVoteFor(letter) void
+    }
+
+    class MediaPipeFaceLandmarkExtractor {
+        +String channelName
+        +String initializeMethod
+        +String processFrameMethod
+        +bool isInitialized
+        -MethodChannel _channel
+        -bool _initialized
+        +initialize() Future
+        +processFrame(bytes, w, h, rotation) Future
+        -_parseResponse(map) FaceLipsResult
+        -_readNumber(map, key) double
+        -_noFaceResult() FaceLipsResult
+    }
+
+    class CameraFrameEncoder {
+        +int chromaSubsampleFactor
+        +int chromaNeutral
+        +double redFromV
+        +double greenFromU
+        +double greenFromV
+        +double blueFromU
+        +encodeToJpeg(image, quality) Future
+        -_encodeBgra(image, quality) Uint8List
+        -_encodeYuv420(image, quality) Uint8List
+        -_toColorByte(value) int
+    }
+
+    class DetectorSettings {
+        +double mouthOpenThreshold
+        +double motionThreshold
+        +double letterMinScore
+        +DetectorSettings defaults
+        +load() Future
+        +save() Future
+        +copyWith() DetectorSettings
+    }
+
+    class MouthSample {
+        <<private>>
+        +double mouthOpen
+        +double mouthPucker
+        +double smile
+    }
+
+    class MouthFeatures {
+        <<private>>
+        +double open
+        +double close
+        +double pucker
+        +double funnel
+        +double stretch
+        +double smile
+    }
+
+    class LetterMatch {
+        <<private>>
+        +String letter
+        +double score
+    }
+
+    LipsCameraSession *-- LipsingDetector : owns
+    LipsCameraSession *-- LipLetterDetector : owns
+    LipsCameraSession *-- MediaPipeFaceLandmarkExtractor : owns
+    LipsCameraSession *-- CameraFrameEncoder : owns
+    LipsCameraSession ..> DetectorSettings : loads
+    LipsCameraSession --> FaceLipsResult : holds result
+
+    LipsingDetector o-- MouthSample : history
+    LipLetterDetector o-- MouthFeatures : window
+    LipLetterDetector ..> LetterMatch : returns
+
+    MediaPipeFaceLandmarkExtractor ..> FaceLipsResult : creates
+    LipsingDetector ..> FaceLipsResult : adds isLipsing
+    LipLetterDetector ..> FaceLipsResult : adds letter

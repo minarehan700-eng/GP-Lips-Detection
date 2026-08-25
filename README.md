@@ -19,6 +19,7 @@ This project is a **standalone** app. It only reuses MediaPipe’s face pipeline
 | File | What it is for |
 |------|----------------|
 | **[`VIVA_CODE_GUIDE.md`](VIVA_CODE_GUIDE.md)** | **Start here to prepare for the discussion.** Explains every important class and function, with likely examiner questions, model answers, and presentation scripts. English + Arabic. |
+| [`documentation/DIAGRAMS.md`](documentation/DIAGRAMS.md) | **15 UML, architecture and software-engineering diagrams** — class, package, component, deployment, state machine, activity, sequence, DFD, use case — each generated from the real code and explained |
 | [`REFACTOR_REPORT.md`](REFACTOR_REPORT.md) | What was simplified, the feature checklist, the test report, and the honest list of untested areas |
 | [`docs/LIPS_OFFLINE_DISSERTATION.md`](docs/LIPS_OFFLINE_DISSERTATION.md) | The full university-style report with diagrams and testing notes |
 
