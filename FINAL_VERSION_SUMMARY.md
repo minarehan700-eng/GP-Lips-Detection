@@ -247,12 +247,13 @@ Run as a **check only**, deliberately **not applied**. The original project was 
 flutter pub get
 ```
 
-**4. ⚠️ Fix Gradle before building.** Open `android/gradle.properties`. Delete the three lines under the block marked `MACHINE-SPECIFIC SETTINGS` unless you are on the original Windows desktop. They point at:
+**4. ⚠️ Point Flutter at a JDK 17 before building.** Gradle 8.14 and the Android Gradle Plugin refuse to run on Java 8, which is still what `java` resolves to on many machines. The setup script does this for you; by hand it is one command:
+```bash
+flutter config --jdk-dir "<path to a JDK 17>"
 ```
-C:\Program Files\Android\Android Studio\jbr
-C:\Users\...\.gradle\ssl-truststore.jks
-```
-Leaving them on another computer fails the build with an error about `org.gradle.java.home`.
+The JDK bundled with Android Studio is always new enough — `C:\Program Files\Android\Android Studio\jbr` on Windows, `/Applications/Android Studio.app/Contents/jbr/Contents/Home` on macOS, `/opt/android-studio/jbr` on Linux. Skipping this fails the build with *"Dependency requires at least JVM runtime version 11. This build uses a Java 8 JVM."*
+
+`android/gradle.properties` no longer carries any machine-specific path, so nothing in it has to be deleted before building on a different computer.
 
 **5.** Verify without a phone:
 ```bash

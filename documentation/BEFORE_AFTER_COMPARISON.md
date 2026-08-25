@@ -312,7 +312,7 @@ The file was removed afterwards so the repository does not carry a duplicate cop
 
 1. **The native Kotlin/Swift code was not compiled.** The build environment blocks `dl.google.com`, so the Android SDK and MediaPipe's Maven repository could not be installed. The Kotlin change is one line (`emptyFacePayload()` now delegates to the bridge) and was reviewed carefully, but **run `flutter run` once on your phone before the defence.** If it fails, revert that one function to its original inline map.
 2. **The app was not run on a device** in the build environment (no camera, no GPU). 9 of the 36 features need real hardware and are marked "Not verified" in the checklist.
-3. **`android/gradle.properties` is not portable** — it hard-codes one Windows machine's JDK and truststore paths. Delete the three lines marked `MACHINE-SPECIFIC SETTINGS` on any other computer.
+3. ~~**`android/gradle.properties` is not portable**~~ — **fixed since.** The hard-coded JDK and truststore paths have been removed, so the file builds anywhere. Each machine now points Flutter at its own JDK 17 once (`flutter config --jdk-dir`, or just run the setup script).
 4. **`path_provider` is declared but never imported.** Left in place, because removing a dependency is a behaviour change this close to the defence.
 
 ### Recommendation

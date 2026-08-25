@@ -79,51 +79,73 @@ if not defined SDKDIR (
     )
 )
 
-rem ------------------------------------------- 4. machine-specific gradle lines
+rem ------------------------------------------------------------ 4. a JDK 17+
+rem
+rem  Gradle 8.14 and the Android Gradle Plugin refuse to run on Java 8, which
+rem  is still what "java" on PATH points at on many Windows machines:
+rem
+rem      Dependency requires at least JVM runtime version 11.
+rem      This build uses a Java 8 JVM.
+rem
+rem  The JDK bundled with Android Studio ("jbr") is always new enough, so the
+rem  known install locations are checked directly - no version parsing needed.
+rem  Whatever is found is handed to the Flutter tool, which then passes it to
+rem  Gradle on every build. Nothing is written into android\gradle.properties:
+rem  that file is shared with everyone and must stay free of paths that exist
+rem  on one computer only.
 echo.
-echo [4/5] Checking the machine-specific lines in android\gradle.properties...
-set "GP=android\gradle.properties"
-if not exist "%GP%" (
-    echo       [!] %GP% is missing - skipping.
-    goto :doctor
+echo [4/5] Looking for a JDK 17 or newer for the Android build...
+
+set "JDKDIR="
+for %%J in (
+    "%ProgramFiles%\Android\Android Studio\jbr"
+    "%ProgramFiles%\Android\Android Studio Preview\jbr"
+    "%LOCALAPPDATA%\Programs\Android Studio\jbr"
+) do (
+    if not defined JDKDIR if exist "%%~J\bin\java.exe" set "JDKDIR=%%~J"
 )
 
-set "JDKOK=0"
-set "TSOK=0"
-if exist "C:\Program Files\Android\Android Studio\jbr" set "JDKOK=1"
-if exist "%USERPROFILE%\.gradle\ssl-truststore.jks" set "TSOK=1"
+rem  JAVA_HOME is a fallback, and only when it is clearly not a Java 8 install
+rem  - a Java 8 JAVA_HOME is exactly what produces the error above. These lines
+rem  are deliberately NOT wrapped in parentheses: JAVA_HOME often contains a
+rem  path like "C:\Program Files (x86)\...", and an unquoted closing bracket
+rem  inside a parenthesised block ends the block early.
+if defined JDKDIR goto :jdk_done
+if not defined JAVA_HOME goto :jdk_done
+if not exist "%JAVA_HOME%\bin\java.exe" goto :jdk_done
+echo "%JAVA_HOME%" | findstr /i /c:"1.8" /c:"jdk8" /c:"jre8" >nul
+if errorlevel 1 set "JDKDIR=%JAVA_HOME%"
+:jdk_done
 
-rem The rewrite is done in PowerShell rather than batch string surgery, so that
-rem the file's blank lines, comments and backslash escaping survive untouched.
-rem A backup is written first and only lines whose target does not exist on this
-rem machine are commented out.
-powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-  "$p='%GP%';" ^
-  "$jdk=[bool]%JDKOK%; $ts=[bool]%TSOK%;" ^
-  "if (-not (Test-Path \"$p.backup\")) { Copy-Item $p \"$p.backup\" };" ^
-  "$out = Get-Content $p | ForEach-Object {" ^
-  "  if ((-not $jdk) -and ($_ -match '^\s*org\.gradle\.java\.home\s*=')) { '# disabled by setup_windows.bat (folder not found on this machine): ' + $_ }" ^
-  "  elseif ((-not $ts) -and ($_ -match '^\s*systemProp\.javax\.net\.ssl\.trustStore')) { '# disabled by setup_windows.bat (file not found on this machine): ' + $_ }" ^
-  "  else { $_ } };" ^
-  "Set-Content -Path $p -Value $out -Encoding ASCII"
-if errorlevel 1 echo       [!] Could not rewrite %GP% - edit it by hand if the build complains.
-
-if "%JDKOK%"=="1" (
-    echo       JDK path OK    : C:\Program Files\Android\Android Studio\jbr
+if not defined JDKDIR (
+    echo       [!] No JDK 17 or newer found.
+    echo.
+    echo           Install Android Studio ^(it bundles one^), or a JDK 17 from
+    echo           https://adoptium.net, then run:
+    echo.
+    echo               flutter config --jdk-dir "^<path to that JDK^>"
+    echo.
+    echo           Without this the Android build stops with
+    echo           "Dependency requires at least JVM runtime version 11".
 ) else (
-    echo       JDK path missing - the org.gradle.java.home line was commented out.
-    echo       Gradle will use your default Java. If the build complains about the
-    echo       Java version, run:  flutter config --jdk-dir "<path to a JDK 17>"
-)
-if "%TSOK%"=="1" (
-    echo       Truststore OK  : %USERPROFILE%\.gradle\ssl-truststore.jks
-) else (
-    echo       Truststore missing - those two lines were commented out.
-    echo       Only needed if antivirus intercepts HTTPS. If downloads fail with an
-    echo       SSL / certificate error, see the README troubleshooting section.
+    echo       Using: !JDKDIR!
+    call flutter config --jdk-dir "!JDKDIR!" >nul 2>&1
+    if errorlevel 1 (
+        echo       [!] "flutter config --jdk-dir" failed - run it by hand.
+    ) else (
+        echo       Registered with Flutter.
+    )
 )
 
-:doctor
+rem  A Gradle daemon started under the old JDK stays alive and keeps repeating
+rem  the old error after the JDK is corrected. Only daemons are ended here -
+rem  matching on the command line rather than on "java.exe", so unrelated Java
+rem  programs the user has open are left alone.
+powershell -NoProfile -Command ^
+  "Get-CimInstance Win32_Process -Filter \"Name='java.exe'\" |" ^
+  "Where-Object { $_.CommandLine -like '*GradleDaemon*' } |" ^
+  "ForEach-Object { Stop-Process -Id $_.ProcessId -Force }" >nul 2>&1
+
 rem ----------------------------------------------------------------- 5. doctor
 echo.
 echo [5/5] Environment check...
