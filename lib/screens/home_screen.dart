@@ -8,13 +8,18 @@ import '../application/lips_camera_session.dart';
 import '../core/app_preferences.dart';
 import '../core/app_theme.dart';
 import '../l10n/app_localizations.dart';
+import '../widgets/app_drawer.dart';
 import '../widgets/detection_ui.dart';
 import '../widgets/gradient_background.dart';
 import '../widgets/lips_camera_preview.dart';
 import '../widgets/lips_detection_panels.dart';
+import 'about_screen.dart';
 import 'practice_screen.dart';
 import 'progress_screen.dart';
 import 'settings_screen.dart';
+import 'shape_guide_screen.dart';
+import 'word_library_screen.dart';
+import 'word_practice_screen.dart';
 
 /// The main screen: live camera, lipsing status, and the detected letter.
 ///
@@ -193,19 +198,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     setState(() => _initializing = false);
   }
 
-  /// Opens Settings and reloads the thresholds when the user comes back.
-  ///
-  /// The reload is what makes a moved slider take effect immediately, without
-  /// restarting the camera.
-  Future<void> _openSettings() async {
-    await Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => const SettingsScreen()),
-    );
-    if (!mounted) return;
-    await _session.applyDetectorSettings();
-    _notifySessionChanged();
-  }
-
   /// Restarts the whole camera session after an error ("Try Again" button).
   /// The practice target is cleared so the user starts from a clean screen.
   Future<void> _retrySetup() async {
@@ -239,11 +231,31 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     _notifySessionChanged();
   }
 
-  Future<void> _openPractice() => _openCameraScreen(const PracticeScreen());
-
-  /// The progress screen does not use the camera, but the walk back through
-  /// suspend and resume costs nothing and keeps one rule for leaving here.
-  Future<void> _openProgress() => _openCameraScreen(const ProgressScreen());
+  /// Opens a drawer destination.
+  ///
+  /// Every route goes through _openCameraScreen, including the ones that do
+  /// not use the camera. Releasing and reopening costs a moment and means
+  /// there is exactly one rule for leaving this screen, rather than a list of
+  /// which destinations happen to need the camera free.
+  Future<void> _go(AppDestination destination) async {
+    final Widget? screen = switch (destination) {
+      AppDestination.detect => null,
+      AppDestination.practice => const PracticeScreen(),
+      AppDestination.words => const _WordsFlow(),
+      AppDestination.shapeGuide => const ShapeGuideScreen(),
+      AppDestination.progress => const ProgressScreen(),
+      AppDestination.settings => const SettingsScreen(),
+      AppDestination.about => const AboutScreen(),
+    };
+    if (screen == null) {
+      return;
+    }
+    await _openCameraScreen(screen);
+    if (!mounted) return;
+    // Thresholds may have been changed while away.
+    await _session.applyDetectorSettings();
+    _notifySessionChanged();
+  }
 
   /// Sets or clears the practice target when a letter chip is tapped.
   /// Tapping the letter that is already the target switches the target off.
@@ -267,25 +279,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: Text(l10n.homeTitle),
-        actions: [
-          IconButton(
-            tooltip: l10n.practice,
-            onPressed: _openPractice,
-            icon: const Icon(Icons.school_rounded),
-          ),
-          IconButton(
-            tooltip: l10n.progress,
-            onPressed: _openProgress,
-            icon: const Icon(Icons.insights_rounded),
-          ),
-          IconButton(
-            tooltip: l10n.a11yOpenSettings,
-            onPressed: _openSettings,
-            icon: const Icon(Icons.settings_rounded),
-          ),
-        ],
+      appBar: AppBar(title: Text(l10n.homeTitle)),
+      drawer: AppDrawer(
+        current: AppDestination.detect,
+        onSelected: _go,
       ),
       body: GradientBackground(
         child: SafeArea(child: _buildBody(context)),
@@ -479,6 +476,27 @@ class _ErrorView extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// The word library, which opens practice for whichever word is tapped.
+///
+/// A thin wrapper so the library screen itself stays a plain list with an
+/// injectable callback, and can therefore be tested without a camera.
+class _WordsFlow extends StatelessWidget {
+  const _WordsFlow();
+
+  @override
+  Widget build(BuildContext context) {
+    return WordLibraryScreen(
+      onWordSelected: (word) {
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (_) => WordPracticeScreen(word: word),
+          ),
+        );
+      },
     );
   }
 }

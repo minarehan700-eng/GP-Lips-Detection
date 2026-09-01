@@ -683,6 +683,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Letter {letter} missed'**
   String a11yPracticeMissed(String letter);
+
+  /// No description provided for @chart.
+  ///
+  /// In en, this message translates to:
+  /// **'Shape guide'**
+  String get chart;
+
+  /// No description provided for @chartIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Five shapes cover the whole alphabet. A shape is not one letter — it is every letter that looks the same on the lips.'**
+  String get chartIntro;
+
+  /// No description provided for @chartWhySame.
+  ///
+  /// In en, this message translates to:
+  /// **'Why P, B and M share one shape'**
+  String get chartWhySame;
+
+  /// No description provided for @chartWhySameBody.
+  ///
+  /// In en, this message translates to:
+  /// **'They are made in different places inside the mouth, but the lips do exactly the same thing. No camera can separate them. Lip reading uses context to choose between them — which is why words are easier to read than letters.'**
+  String get chartWhySameBody;
+
+  /// No description provided for @chartLetters.
+  ///
+  /// In en, this message translates to:
+  /// **'Letters'**
+  String get chartLetters;
+
+  /// No description provided for @chartTry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try saying'**
+  String get chartTry;
+
+  /// No description provided for @words.
+  ///
+  /// In en, this message translates to:
+  /// **'Words'**
+  String get words;
+
+  /// No description provided for @wordsIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'A single shape is ambiguous. A run of shapes is much less so — this is how lip reading actually works.'**
+  String get wordsIntro;
+
+  /// No description provided for @wordsGreetings.
+  ///
+  /// In en, this message translates to:
+  /// **'Greetings'**
+  String get wordsGreetings;
+
+  /// No description provided for @wordsNumbers.
+  ///
+  /// In en, this message translates to:
+  /// **'Numbers'**
+  String get wordsNumbers;
+
+  /// No description provided for @wordsEmergency.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency'**
+  String get wordsEmergency;
+
+  /// No description provided for @wordsEveryday.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyday'**
+  String get wordsEveryday;
+
+  /// No description provided for @wordShapes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} shapes'**
+  String wordShapes(int count);
+
+  /// No description provided for @wordSayIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Mouth this word'**
+  String get wordSayIt;
+
+  /// No description provided for @wordNextShape.
+  ///
+  /// In en, this message translates to:
+  /// **'Next shape: {shape}'**
+  String wordNextShape(String shape);
+
+  /// No description provided for @wordComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Word complete'**
+  String get wordComplete;
+
+  /// No description provided for @wordExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Time up — try again'**
+  String get wordExpired;
+
+  /// No description provided for @wordEnglishOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'The word library is English. Other scripts need their own shape rules.'**
+  String get wordEnglishOnly;
+
+  /// No description provided for @about.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get about;
+
+  /// No description provided for @aboutWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'What this app can and cannot do'**
+  String get aboutWhat;
+
+  /// No description provided for @aboutCan.
+  ///
+  /// In en, this message translates to:
+  /// **'It reads five mouth shapes in real time, entirely on the phone, with no internet connection at any point.'**
+  String get aboutCan;
+
+  /// No description provided for @aboutCannot.
+  ///
+  /// In en, this message translates to:
+  /// **'It is not speech recognition. It reports shapes, not words, and it cannot tell letters apart that the lips make identically.'**
+  String get aboutCannot;
+
+  /// No description provided for @aboutPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy'**
+  String get aboutPrivacy;
+
+  /// No description provided for @aboutPrivacyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'No camera frame ever leaves the phone. The app contains no networking code at all, and asks for one permission: the camera.'**
+  String get aboutPrivacyBody;
+
+  /// No description provided for @a11yWordShape.
+  ///
+  /// In en, this message translates to:
+  /// **'Shape {position} of {total}: {shape}'**
+  String a11yWordShape(int position, int total, String shape);
 }
 
 class _AppLocalizationsDelegate

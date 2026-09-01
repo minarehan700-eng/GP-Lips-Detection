@@ -350,4 +350,92 @@ class AppLocalizationsEn extends AppLocalizations {
   String a11yPracticeMissed(String letter) {
     return 'Letter $letter missed';
   }
+
+  @override
+  String get chart => 'Shape guide';
+
+  @override
+  String get chartIntro =>
+      'Five shapes cover the whole alphabet. A shape is not one letter — it is every letter that looks the same on the lips.';
+
+  @override
+  String get chartWhySame => 'Why P, B and M share one shape';
+
+  @override
+  String get chartWhySameBody =>
+      'They are made in different places inside the mouth, but the lips do exactly the same thing. No camera can separate them. Lip reading uses context to choose between them — which is why words are easier to read than letters.';
+
+  @override
+  String get chartLetters => 'Letters';
+
+  @override
+  String get chartTry => 'Try saying';
+
+  @override
+  String get words => 'Words';
+
+  @override
+  String get wordsIntro =>
+      'A single shape is ambiguous. A run of shapes is much less so — this is how lip reading actually works.';
+
+  @override
+  String get wordsGreetings => 'Greetings';
+
+  @override
+  String get wordsNumbers => 'Numbers';
+
+  @override
+  String get wordsEmergency => 'Emergency';
+
+  @override
+  String get wordsEveryday => 'Everyday';
+
+  @override
+  String wordShapes(int count) {
+    return '$count shapes';
+  }
+
+  @override
+  String get wordSayIt => 'Mouth this word';
+
+  @override
+  String wordNextShape(String shape) {
+    return 'Next shape: $shape';
+  }
+
+  @override
+  String get wordComplete => 'Word complete';
+
+  @override
+  String get wordExpired => 'Time up — try again';
+
+  @override
+  String get wordEnglishOnly =>
+      'The word library is English. Other scripts need their own shape rules.';
+
+  @override
+  String get about => 'About';
+
+  @override
+  String get aboutWhat => 'What this app can and cannot do';
+
+  @override
+  String get aboutCan =>
+      'It reads five mouth shapes in real time, entirely on the phone, with no internet connection at any point.';
+
+  @override
+  String get aboutCannot =>
+      'It is not speech recognition. It reports shapes, not words, and it cannot tell letters apart that the lips make identically.';
+
+  @override
+  String get aboutPrivacy => 'Privacy';
+
+  @override
+  String get aboutPrivacyBody =>
+      'No camera frame ever leaves the phone. The app contains no networking code at all, and asks for one permission: the camera.';
+
+  @override
+  String a11yWordShape(int position, int total, String shape) {
+    return 'Shape $position of $total: $shape';
+  }
 }

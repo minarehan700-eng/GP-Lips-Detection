@@ -443,6 +443,51 @@ Anything that needs real camera hardware: opening the camera, MediaPipe model lo
 
 ---
 
+## Every letter, and every digit — honestly
+
+The detector reports five shapes. That is not a shortcut, and adding twenty-one
+more would not be an improvement: **"p", "b" and "m" are the same mouth shape.**
+They are articulated in different places inside the mouth, but the lips do
+exactly the same thing, so no camera can separate them. An app that claimed
+otherwise would return confident wrong answers.
+
+So the alphabet is covered by **grouping**, not by dropping:
+
+| Shape | Mouth | Letters and sounds |
+|-------|-------|--------------------|
+| **A** | jaw dropped, wide | a, ah, aa |
+| **B** | lips pressed together | p, b, m |
+| **C** | pushed forward, round | o, u, w, oo, ow |
+| **D** | slightly open, tongue working | t, d, n, l, s, z, k, g, r, h, j, c, q, x, th, f, v |
+| **E** | pulled wide, small smile | e, i, y, ee |
+
+A test asserts that every letter from a to z maps to a shape, so the claim that
+nothing is missing is checked rather than asserted.
+
+**Digits** are practised as the words for them — "zero" through "ten" are in the
+word library. A digit is not a mouth shape, but the word for it is a run of
+shapes like any other.
+
+**Words are where lip reading actually works.** One shape is ambiguous; a
+*sequence* of them is far less so. "mama" is closed-open-closed-open, and few
+words share that pattern. Word practice walks through a word shape by shape,
+with a shorter hold than single-letter practice — holding each shape for the
+full letter duration turns a four-shape word into an unnatural performance.
+
+The word library covers greetings, the digits, emergency words and everyday
+words. It is English: the grapheme-to-shape rules are English, and other
+scripts need their own.
+
+### What would be needed for true 26-letter detection
+
+Fingerspelling — the sign-language alphabet — genuinely has 26 distinct letters
+and 10 digits, because they are made with the **hands**, not the lips. That is a
+different pipeline: MediaPipe's Hand Landmarker, a second model file, and new
+code in both native bridges. It is a real and worthwhile direction, and it is
+not in this build.
+
+---
+
 ## Practice mode
 
 The home screen answers *"what shape am I making?"*. That is a demonstration.

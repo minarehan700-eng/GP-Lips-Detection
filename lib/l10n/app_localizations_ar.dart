@@ -345,4 +345,92 @@ class AppLocalizationsAr extends AppLocalizations {
   String a11yPracticeMissed(String letter) {
     return 'فاتك الحرف $letter';
   }
+
+  @override
+  String get chart => 'دليل الأشكال';
+
+  @override
+  String get chartIntro =>
+      'خمسة أشكال تغطي الأبجدية كاملة. الشكل ليس حرفًا واحدًا، بل كل الحروف التي تبدو متطابقة على الشفاه.';
+
+  @override
+  String get chartWhySame => 'لماذا تشترك P وB وM في شكل واحد';
+
+  @override
+  String get chartWhySameBody =>
+      'تُنطق في مواضع مختلفة داخل الفم، لكن الشفاه تفعل الشيء نفسه تمامًا. لا كاميرا تستطيع التفريق بينها. قراءة الشفاه تعتمد على السياق للاختيار بينها، ولهذا قراءة الكلمات أسهل من الحروف.';
+
+  @override
+  String get chartLetters => 'الحروف';
+
+  @override
+  String get chartTry => 'جرّب أن تقول';
+
+  @override
+  String get words => 'الكلمات';
+
+  @override
+  String get wordsIntro =>
+      'الشكل الواحد غامض، أما تتابع الأشكال فأوضح بكثير — وهكذا تعمل قراءة الشفاه فعلاً.';
+
+  @override
+  String get wordsGreetings => 'التحيات';
+
+  @override
+  String get wordsNumbers => 'الأرقام';
+
+  @override
+  String get wordsEmergency => 'الطوارئ';
+
+  @override
+  String get wordsEveryday => 'يومية';
+
+  @override
+  String wordShapes(int count) {
+    return '$count أشكال';
+  }
+
+  @override
+  String get wordSayIt => 'انطق هذه الكلمة بصمت';
+
+  @override
+  String wordNextShape(String shape) {
+    return 'الشكل التالي: $shape';
+  }
+
+  @override
+  String get wordComplete => 'اكتملت الكلمة';
+
+  @override
+  String get wordExpired => 'انتهى الوقت — حاول مجددًا';
+
+  @override
+  String get wordEnglishOnly =>
+      'مكتبة الكلمات بالإنجليزية. اللغات ذات الحروف الأخرى تحتاج قواعد أشكال خاصة بها.';
+
+  @override
+  String get about => 'حول التطبيق';
+
+  @override
+  String get aboutWhat => 'ما يستطيعه هذا التطبيق وما لا يستطيعه';
+
+  @override
+  String get aboutCan =>
+      'يقرأ خمسة أشكال للفم لحظيًا، بالكامل على الهاتف، ودون أي اتصال بالإنترنت.';
+
+  @override
+  String get aboutCannot =>
+      'ليس تعرفًا على الكلام. يبلّغ عن أشكال لا كلمات، ولا يميّز بين حروف تصنعها الشفاه بالشكل نفسه.';
+
+  @override
+  String get aboutPrivacy => 'الخصوصية';
+
+  @override
+  String get aboutPrivacyBody =>
+      'لا تغادر أي لقطة من الكاميرا الهاتف أبدًا. لا يحتوي التطبيق على أي كود شبكة، ويطلب إذنًا واحدًا فقط: الكاميرا.';
+
+  @override
+  String a11yWordShape(int position, int total, String shape) {
+    return 'الشكل $position من $total: $shape';
+  }
 }

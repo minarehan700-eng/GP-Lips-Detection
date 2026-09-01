@@ -352,4 +352,92 @@ class AppLocalizationsEs extends AppLocalizations {
   String a11yPracticeMissed(String letter) {
     return 'Letra $letter fallada';
   }
+
+  @override
+  String get chart => 'Guía de formas';
+
+  @override
+  String get chartIntro =>
+      'Cinco formas cubren todo el alfabeto. Una forma no es una letra: son todas las letras que se ven igual en los labios.';
+
+  @override
+  String get chartWhySame => 'Por qué P, B y M comparten forma';
+
+  @override
+  String get chartWhySameBody =>
+      'Se articulan en puntos distintos de la boca, pero los labios hacen exactamente lo mismo. Ninguna cámara puede separarlas. La lectura labial usa el contexto para elegir, y por eso las palabras se leen mejor que las letras.';
+
+  @override
+  String get chartLetters => 'Letras';
+
+  @override
+  String get chartTry => 'Prueba a decir';
+
+  @override
+  String get words => 'Palabras';
+
+  @override
+  String get wordsIntro =>
+      'Una forma aislada es ambigua. Una secuencia de formas lo es mucho menos: así funciona realmente la lectura labial.';
+
+  @override
+  String get wordsGreetings => 'Saludos';
+
+  @override
+  String get wordsNumbers => 'Números';
+
+  @override
+  String get wordsEmergency => 'Emergencias';
+
+  @override
+  String get wordsEveryday => 'Cotidianas';
+
+  @override
+  String wordShapes(int count) {
+    return '$count formas';
+  }
+
+  @override
+  String get wordSayIt => 'Vocaliza esta palabra';
+
+  @override
+  String wordNextShape(String shape) {
+    return 'Siguiente forma: $shape';
+  }
+
+  @override
+  String get wordComplete => 'Palabra completa';
+
+  @override
+  String get wordExpired => 'Tiempo agotado, inténtalo otra vez';
+
+  @override
+  String get wordEnglishOnly =>
+      'La biblioteca de palabras está en inglés. Otros alfabetos necesitan sus propias reglas de formas.';
+
+  @override
+  String get about => 'Acerca de';
+
+  @override
+  String get aboutWhat => 'Qué puede y qué no puede hacer esta app';
+
+  @override
+  String get aboutCan =>
+      'Lee cinco formas de la boca en tiempo real, todo en el teléfono y sin conexión a internet.';
+
+  @override
+  String get aboutCannot =>
+      'No es reconocimiento de voz. Informa de formas, no de palabras, y no distingue letras que los labios hacen igual.';
+
+  @override
+  String get aboutPrivacy => 'Privacidad';
+
+  @override
+  String get aboutPrivacyBody =>
+      'Ningún fotograma sale del teléfono. La app no contiene código de red alguno y pide un solo permiso: la cámara.';
+
+  @override
+  String a11yWordShape(int position, int total, String shape) {
+    return 'Forma $position de $total: $shape';
+  }
 }

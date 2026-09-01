@@ -283,5 +283,62 @@
         "example": "A"
       }
     }
+  },
+  "chart": "Shape guide",
+  "chartIntro": "Five shapes cover the whole alphabet. A shape is not one letter — it is every letter that looks the same on the lips.",
+  "chartWhySame": "Why P, B and M share one shape",
+  "chartWhySameBody": "They are made in different places inside the mouth, but the lips do exactly the same thing. No camera can separate them. Lip reading uses context to choose between them — which is why words are easier to read than letters.",
+  "chartLetters": "Letters",
+  "chartTry": "Try saying",
+  "words": "Words",
+  "wordsIntro": "A single shape is ambiguous. A run of shapes is much less so — this is how lip reading actually works.",
+  "wordsGreetings": "Greetings",
+  "wordsNumbers": "Numbers",
+  "wordsEmergency": "Emergency",
+  "wordsEveryday": "Everyday",
+  "wordShapes": "{count} shapes",
+  "@wordShapes": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "wordSayIt": "Mouth this word",
+  "wordNextShape": "Next shape: {shape}",
+  "@wordNextShape": {
+    "placeholders": {
+      "shape": {
+        "type": "String",
+        "example": "B"
+      }
+    }
+  },
+  "wordComplete": "Word complete",
+  "wordExpired": "Time up — try again",
+  "wordEnglishOnly": "The word library is English. Other scripts need their own shape rules.",
+  "about": "About",
+  "aboutWhat": "What this app can and cannot do",
+  "aboutCan": "It reads five mouth shapes in real time, entirely on the phone, with no internet connection at any point.",
+  "aboutCannot": "It is not speech recognition. It reports shapes, not words, and it cannot tell letters apart that the lips make identically.",
+  "aboutPrivacy": "Privacy",
+  "aboutPrivacyBody": "No camera frame ever leaves the phone. The app contains no networking code at all, and asks for one permission: the camera.",
+  "a11yWordShape": "Shape {position} of {total}: {shape}",
+  "@a11yWordShape": {
+    "placeholders": {
+      "position": {
+        "type": "int",
+        "example": "2"
+      },
+      "total": {
+        "type": "int",
+        "example": "4"
+      },
+      "shape": {
+        "type": "String",
+        "example": "B"
+      }
+    }
   }
 }
