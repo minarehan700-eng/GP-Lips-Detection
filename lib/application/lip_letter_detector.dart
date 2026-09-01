@@ -198,21 +198,21 @@ class LipLetterDetector {
     final double mouthHeight = math.max(raw.mouthMaxY - raw.mouthMinY, 0.0);
 
     // Step 2: a tall-and-narrow box means an open mouth.
-    final double geometricOpen = (mouthHeight / mouthWidth).clamp(0.0, 1.0);
+    final double geometricOpen = _clamp01(mouthHeight / mouthWidth);
 
     // Step 3: blend the model's value with the geometric hint.
-    final double blendedOpen =
-        (blendshapeOpenWeight * raw.mouthOpen.clamp(0.0, 1.0) +
-                geometryOpenWeight * geometricOpen)
-            .clamp(0.0, 1.0);
+    final double blendedOpen = _clamp01(
+      blendshapeOpenWeight * _clamp01(raw.mouthOpen) +
+          geometryOpenWeight * geometricOpen,
+    );
 
     return _MouthFeatures(
       open: blendedOpen,
-      close: raw.mouthClose.clamp(0.0, 1.0),
-      pucker: raw.mouthPucker.clamp(0.0, 1.0),
-      funnel: raw.mouthFunnel.clamp(0.0, 1.0),
-      stretch: raw.mouthStretch.clamp(0.0, 1.0),
-      smile: raw.smile.clamp(0.0, 1.0),
+      close: _clamp01(raw.mouthClose),
+      pucker: _clamp01(raw.mouthPucker),
+      funnel: _clamp01(raw.mouthFunnel),
+      stretch: _clamp01(raw.mouthStretch),
+      smile: _clamp01(raw.smile),
     );
   }
 
@@ -351,7 +351,7 @@ class LipLetterDetector {
       // full [slightOpenTolerance] away in either direction.
       final double distanceFromIdeal = (f.open - slightOpenIdeal).abs();
       final double shapeMatch =
-          1.0 - (distanceFromIdeal / slightOpenTolerance).clamp(0.0, 1.0);
+          1.0 - _clamp01(distanceFromIdeal / slightOpenTolerance);
 
       final double score = _clamp01(
         shapeMatch * slightOpenShapeWeight + f.open * slightOpenSizeWeight,

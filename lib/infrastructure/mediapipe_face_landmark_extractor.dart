@@ -54,6 +54,17 @@ class MediaPipeFaceLandmarkExtractor {
                 'Ensure face_landmarker.task exists in android/app/src/main/assets '
                 '(and iOS Runner bundle).',
       );
+    } on MissingPluginException {
+      // MissingPluginException is NOT a subtype of PlatformException — both
+      // implement Exception separately — so it needs its own clause or it
+      // escapes as a raw error with no explanation. It means the native half
+      // of the bridge was never registered on this platform.
+      throw Exception(
+        'The native face landmarker is not available on this platform. '
+            'The Android bridge is registered in MainActivity.kt and the iOS '
+            'one in AppDelegate.swift; on a fresh checkout a full restart '
+            '(not hot reload) is needed after either is added.',
+      );
     }
   }
 
@@ -97,6 +108,12 @@ class MediaPipeFaceLandmarkExtractor {
       );
     } on PlatformException {
       // Native side failed on this frame; treat it as "no face this time".
+      response = null;
+    } on MissingPluginException {
+      // Not a PlatformException, so it needs its own clause. Without it every
+      // single frame throws instead of returning "no face" when the native
+      // bridge is absent. initialize() reports that case properly; here the
+      // frame is simply dropped.
       response = null;
     }
 

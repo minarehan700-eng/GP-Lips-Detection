@@ -140,9 +140,15 @@ class LipsCameraSession {
         return;
       }
 
+      // The controller is handed over BEFORE the stream starts. If
+      // startImageStream throws, the catch below can only dispose what the
+      // session owns; a controller still held in a local variable was
+      // unreachable, so every failed attempt — and every "Try Again" after
+      // one — left an initialized camera open.
+      camera = controller;
+
       await controller.startImageStream((image) => _onFrame(image, onUpdate));
 
-      camera = controller;
       isFrontCamera = chosenCamera.lensDirection == CameraLensDirection.front;
       cameraResolutionLabel = _describeResolution(controller);
       initPhase = 'Ready';
@@ -152,10 +158,31 @@ class LipsCameraSession {
       // Raised by the camera plugin or the method channel, e.g. when the user
       // denies camera permission.
       error = e.message ?? e.code;
+      await _releaseFailedCamera();
       onUpdate();
     } catch (e) {
       error = e.toString();
+      await _releaseFailedCamera();
       onUpdate();
+    }
+  }
+
+  /// Closes a camera that was opened but could not be brought into service.
+  ///
+  /// Without this the hardware stays held until the screen is closed, and the
+  /// error view offers "Try Again", which would open a second one on top.
+  Future<void> _releaseFailedCamera() async {
+    final CameraController? failed = camera;
+    camera = null;
+    cameraResolutionLabel = null;
+    if (failed != null) {
+      try {
+        await failed.dispose();
+      } catch (_) {
+        // Disposing a controller that never fully opened can itself throw.
+        // Nothing useful is left to do, and the original error is the one
+        // worth showing the user.
+      }
     }
   }
 
@@ -257,6 +284,11 @@ class LipsCameraSession {
       frameImageWidth = image.width;
       frameImageHeight = image.height;
       onUpdate();
+    } catch (_) {
+      // One frame failing must not take the pipeline down with it. Without
+      // this catch the error escapes into the camera plugin's stream callback
+      // as an unhandled async error, once per bad frame. The previous result
+      // stays on screen until a frame succeeds.
     } finally {
       // Always clear the flag, even after an error, or the pipeline would
       // freeze and no further frame would ever be analysed.
@@ -277,6 +309,42 @@ class LipsCameraSession {
     initPhase = 'Starting...';
     result = FaceLipsResult.empty;
     onUpdate();
+    await initialize(onUpdate);
+  }
+
+  /// Closes the camera while the app is not on screen.
+  ///
+  /// Android reclaims the camera from a backgrounded app anyway, and a
+  /// controller that was taken away does not recover — the preview comes back
+  /// frozen. Releasing it deliberately means [resume] can open a fresh one.
+  /// It also stops the phone showing the camera-in-use indicator for an app
+  /// the user has switched away from.
+  ///
+  /// Detector state is kept, so returning to the app does not lose the
+  /// practice target or the thresholds.
+  Future<void> suspend() async {
+    final CameraController? open = camera;
+    camera = null;
+    cameraResolutionLabel = null;
+    result = FaceLipsResult.empty;
+    if (open != null) {
+      try {
+        await open.dispose();
+      } catch (_) {
+        // The platform may already have taken the camera back. Nothing is
+        // gained by reporting that here — resume() opens a new one.
+      }
+    }
+  }
+
+  /// Opens the camera again after [suspend], when the app returns to screen.
+  ///
+  /// Does nothing when a camera is already open, so a duplicate lifecycle
+  /// callback cannot open two.
+  Future<void> resume(void Function() onUpdate) async {
+    if (camera != null) {
+      return;
+    }
     await initialize(onUpdate);
   }
 

@@ -26,7 +26,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   /// Owns the camera and both detectors.
   final _session = LipsCameraSession();
 
@@ -42,7 +42,47 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _scheduleSetup();
+  }
+
+  /// Closes the camera when the app leaves the screen and opens it again on
+  /// the way back.
+  ///
+  /// Without this the camera kept streaming while the app was in the
+  /// background — the phone's camera indicator stayed lit and the battery
+  /// drained — and Android reclaiming the camera left the preview frozen on
+  /// return, with no way back except restarting the app.
+  ///
+  /// Nothing happens while the start-up is still running or an error is on
+  /// screen: there is no working camera to close, and reopening would fight
+  /// with the "Try Again" button.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (_initializing || _session.error != null) {
+      return;
+    }
+
+    switch (state) {
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.hidden:
+      case AppLifecycleState.detached:
+        unawaited(_suspendCamera());
+      case AppLifecycleState.resumed:
+        unawaited(_resumeCamera());
+    }
+  }
+
+  Future<void> _suspendCamera() async {
+    await _session.suspend();
+    _notifySessionChanged();
+  }
+
+  Future<void> _resumeCamera() async {
+    await _session.resume(_notifySessionChanged);
+    _notifySessionChanged();
   }
 
   /// Starts the camera after the first frame is drawn.
@@ -114,6 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     // Releases the camera; without this it would keep running in the
     // background and the phone would show the camera-in-use indicator.
     unawaited(_session.dispose());
