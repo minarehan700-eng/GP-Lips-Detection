@@ -253,4 +253,96 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get announceDetectionsHelp => 'يرسل كل حرف مُكتشَف إلى قارئ الشاشة';
+
+  @override
+  String get practice => 'التدريب';
+
+  @override
+  String get practiceStart => 'ابدأ جولة';
+
+  @override
+  String get practiceMakeShape => 'كوّن هذا الشكل';
+
+  @override
+  String get practiceHold => 'استمر…';
+
+  @override
+  String get practiceGotIt => 'أحسنت!';
+
+  @override
+  String get practiceMissed => 'لم يُضبط — ننتقل';
+
+  @override
+  String practiceProgress(int done, int total) {
+    return '$done من $total';
+  }
+
+  @override
+  String practiceScore(int hits, int total) {
+    return 'ضبطت $hits من $total';
+  }
+
+  @override
+  String practiceBestStreak(int streak) {
+    return 'أطول سلسلة: $streak';
+  }
+
+  @override
+  String get practiceAgain => 'تدرب مرة أخرى';
+
+  @override
+  String get practiceDone => 'انتهت الجولة';
+
+  @override
+  String practiceNearMiss(String letter) {
+    return 'كنت قريبًا من $letter';
+  }
+
+  @override
+  String get progress => 'تقدمك';
+
+  @override
+  String get progressNone => 'لا توجد جولات بعد. أنهِ جولة وستظهر نتائجك هنا.';
+
+  @override
+  String get progressPerLetter => 'أداؤك في كل حرف';
+
+  @override
+  String progressAttempts(int hits, int attempts) {
+    return '$hits/$attempts';
+  }
+
+  @override
+  String get progressUntried => 'لم تُجرَّب بعد';
+
+  @override
+  String progressWeakest(String letter) {
+    return 'يستحق التدريب: $letter';
+  }
+
+  @override
+  String progressRounds(int count) {
+    return '$count جولة محفوظة';
+  }
+
+  @override
+  String get progressClear => 'مسح السجل';
+
+  @override
+  String get progressCleared => 'تم مسح السجل';
+
+  @override
+  String a11yPracticeTarget(String letter) {
+    return 'كوّن شكل الحرف $letter';
+  }
+
+  @override
+  String a11yPracticeHeld(String letter) {
+    return 'تم ضبط الحرف $letter';
+  }
+
+  @override
+  String a11yPracticeMissed(String letter) {
+    return 'فاتك الحرف $letter';
+  }
 }

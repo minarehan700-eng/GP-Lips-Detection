@@ -12,6 +12,8 @@ import '../widgets/detection_ui.dart';
 import '../widgets/gradient_background.dart';
 import '../widgets/lips_camera_preview.dart';
 import '../widgets/lips_detection_panels.dart';
+import 'practice_screen.dart';
+import 'progress_screen.dart';
 import 'settings_screen.dart';
 
 /// The main screen: live camera, lipsing status, and the detected letter.
@@ -217,6 +219,32 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     setState(() => _initializing = false);
   }
 
+  /// Opens a screen that needs the camera itself, giving ours up first.
+  ///
+  /// Two CameraControllers cannot hold the same device at once, so leaving
+  /// this screen's camera open while the practice screen opens its own gets
+  /// one of them a hardware error. Ours is released on the way out and opened
+  /// again on the way back.
+  Future<void> _openCameraScreen(Widget screen) async {
+    await _session.suspend();
+    _notifySessionChanged();
+    if (!mounted) return;
+
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => screen),
+    );
+    if (!mounted) return;
+
+    await _session.resume(_notifySessionChanged);
+    _notifySessionChanged();
+  }
+
+  Future<void> _openPractice() => _openCameraScreen(const PracticeScreen());
+
+  /// The progress screen does not use the camera, but the walk back through
+  /// suspend and resume costs nothing and keeps one rule for leaving here.
+  Future<void> _openProgress() => _openCameraScreen(const ProgressScreen());
+
   /// Sets or clears the practice target when a letter chip is tapped.
   /// Tapping the letter that is already the target switches the target off.
   void _toggleTargetLetter(String letter) {
@@ -236,13 +264,24 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Lips Detection'),
+        title: Text(l10n.homeTitle),
         actions: [
           IconButton(
-            tooltip: 'Settings',
+            tooltip: l10n.practice,
+            onPressed: _openPractice,
+            icon: const Icon(Icons.school_rounded),
+          ),
+          IconButton(
+            tooltip: l10n.progress,
+            onPressed: _openProgress,
+            icon: const Icon(Icons.insights_rounded),
+          ),
+          IconButton(
+            tooltip: l10n.a11yOpenSettings,
             onPressed: _openSettings,
             icon: const Icon(Icons.settings_rounded),
           ),

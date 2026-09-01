@@ -84,8 +84,10 @@ void main() {
         // forgot. Sometimes it is simply the right answer, so those are listed
         // rather than the check being dropped.
         const sameByDesign = <String, Set<String>>{
-          // The brand name is not translated in any language.
-          '*': {'appTitle', 'brandName'},
+          // The brand name is not translated in any language, and
+          // "{hits}/{attempts}" is two numbers and a slash - there is nothing
+          // in it to translate.
+          '*': {'appTitle', 'brandName', 'progressAttempts'},
           // "No" really is "No" in Spanish.
           'es': {'no'},
         };
@@ -218,6 +220,35 @@ void main() {
       final reloaded = await AppPreferences.load();
       expect(reloaded.hapticsEnabled, isFalse);
       expect(reloaded.announceDetections, isFalse);
+      expect(reloaded.localeCode, 'fr');
+    });
+
+    test('onboarding is not marked as read until it has been', () async {
+      SharedPreferences.setMockInitialValues({});
+
+      expect((await AppPreferences.load()).onboardingSeen, isFalse);
+    });
+
+    test('once read, onboarding stays read across launches', () async {
+      // It used to reappear on every single launch - helpful once, tiresome
+      // by the tenth time.
+      SharedPreferences.setMockInitialValues({});
+      final controller = AppPreferencesController(await AppPreferences.load());
+
+      await controller.markOnboardingSeen();
+
+      expect((await AppPreferences.load()).onboardingSeen, isTrue);
+    });
+
+    test('changing the language does not forget that it was read', () async {
+      SharedPreferences.setMockInitialValues({});
+      final controller = AppPreferencesController(await AppPreferences.load());
+      await controller.markOnboardingSeen();
+
+      await controller.setLocale('fr');
+
+      final reloaded = await AppPreferences.load();
+      expect(reloaded.onboardingSeen, isTrue);
       expect(reloaded.localeCode, 'fr');
     });
 

@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../core/app_navigation.dart';
+import '../core/app_preferences.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/animated_brand_text.dart';
 import '../widgets/gradient_background.dart';
+import 'home_screen.dart';
 import 'onboarding/onboarding_screen.dart';
 
 /// Splash screen shown on launch; navigates to onboarding after a short delay.
@@ -39,11 +41,18 @@ class _SplashScreenState extends State<SplashScreen> {
     super.dispose();
   }
 
-  /// Replaces the splash with onboarding once the timer finishes.
+  /// Replaces the splash once the timer finishes: with onboarding the first
+  /// time, and straight to the home screen afterwards.
+  ///
+  /// The three intro pages used to appear on every single launch, which is
+  /// helpful once and tiresome by the tenth time.
   void _goOnboarding() {
     if (!mounted) return;
+    final seen = AppPreferencesScope.settingsOf(context).onboardingSeen;
     Navigator.of(context).pushReplacement(
-      AppNavigation.fadeTransition(const OnboardingScreen()),
+      AppNavigation.fadeTransition(
+        seen ? const HomeScreen() : const OnboardingScreen(),
+      ),
     );
   }
 

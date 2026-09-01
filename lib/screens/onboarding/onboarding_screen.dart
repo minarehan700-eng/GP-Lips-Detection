@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../core/app_navigation.dart';
+import '../../core/app_preferences.dart';
 import '../../l10n/app_localizations.dart';
 import '../../widgets/gradient_background.dart';
 import '../home_screen.dart';
@@ -34,6 +37,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   /// Goes to the home screen, replacing onboarding so the back button cannot
   /// return to it.
   void _goHome() {
+    // Recorded on the way out rather than on the way in, so someone who backs
+    // out of onboarding still sees it next time.
+    unawaited(AppPreferencesScope.of(context).markOnboardingSeen());
     Navigator.of(context).pushReplacement(
       AppNavigation.fadeTransition(const HomeScreen()),
     );

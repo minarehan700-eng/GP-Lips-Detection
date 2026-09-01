@@ -259,4 +259,97 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get announceDetectionsHelp =>
       'Envía cada letra detectada a tu lector de pantalla';
+
+  @override
+  String get practice => 'Practicar';
+
+  @override
+  String get practiceStart => 'Empezar una ronda';
+
+  @override
+  String get practiceMakeShape => 'Haz esta forma';
+
+  @override
+  String get practiceHold => 'Mantén…';
+
+  @override
+  String get practiceGotIt => '¡Bien!';
+
+  @override
+  String get practiceMissed => 'Fallada, seguimos';
+
+  @override
+  String practiceProgress(int done, int total) {
+    return '$done de $total';
+  }
+
+  @override
+  String practiceScore(int hits, int total) {
+    return '$hits de $total logradas';
+  }
+
+  @override
+  String practiceBestStreak(int streak) {
+    return 'Mejor racha: $streak';
+  }
+
+  @override
+  String get practiceAgain => 'Practicar otra vez';
+
+  @override
+  String get practiceDone => 'Ronda terminada';
+
+  @override
+  String practiceNearMiss(String letter) {
+    return 'Estuviste cerca con $letter';
+  }
+
+  @override
+  String get progress => 'Progreso';
+
+  @override
+  String get progressNone =>
+      'Aún no hay rondas. Completa una y verás aquí tus resultados.';
+
+  @override
+  String get progressPerLetter => 'Cómo va cada letra';
+
+  @override
+  String progressAttempts(int hits, int attempts) {
+    return '$hits/$attempts';
+  }
+
+  @override
+  String get progressUntried => 'sin practicar';
+
+  @override
+  String progressWeakest(String letter) {
+    return 'Conviene practicar: $letter';
+  }
+
+  @override
+  String progressRounds(int count) {
+    return '$count rondas guardadas';
+  }
+
+  @override
+  String get progressClear => 'Borrar historial';
+
+  @override
+  String get progressCleared => 'Historial borrado';
+
+  @override
+  String a11yPracticeTarget(String letter) {
+    return 'Haz la forma de la letra $letter';
+  }
+
+  @override
+  String a11yPracticeHeld(String letter) {
+    return 'Letra $letter lograda';
+  }
+
+  @override
+  String a11yPracticeMissed(String letter) {
+    return 'Letra $letter fallada';
+  }
 }

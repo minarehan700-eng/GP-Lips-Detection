@@ -539,6 +539,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sends each detected letter to your screen reader'**
   String get announceDetectionsHelp;
+
+  /// No description provided for @practice.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice'**
+  String get practice;
+
+  /// No description provided for @practiceStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a round'**
+  String get practiceStart;
+
+  /// No description provided for @practiceMakeShape.
+  ///
+  /// In en, this message translates to:
+  /// **'Make this shape'**
+  String get practiceMakeShape;
+
+  /// No description provided for @practiceHold.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold it…'**
+  String get practiceHold;
+
+  /// No description provided for @practiceGotIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it!'**
+  String get practiceGotIt;
+
+  /// No description provided for @practiceMissed.
+  ///
+  /// In en, this message translates to:
+  /// **'Missed — moving on'**
+  String get practiceMissed;
+
+  /// How far through a round
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {total}'**
+  String practiceProgress(int done, int total);
+
+  /// No description provided for @practiceScore.
+  ///
+  /// In en, this message translates to:
+  /// **'{hits} of {total} held'**
+  String practiceScore(int hits, int total);
+
+  /// No description provided for @practiceBestStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Best streak: {streak}'**
+  String practiceBestStreak(int streak);
+
+  /// No description provided for @practiceAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Practise again'**
+  String get practiceAgain;
+
+  /// No description provided for @practiceDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Round finished'**
+  String get practiceDone;
+
+  /// Shown when a missed letter still scored well
+  ///
+  /// In en, this message translates to:
+  /// **'You were close on {letter}'**
+  String practiceNearMiss(String letter);
+
+  /// No description provided for @progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress'**
+  String get progress;
+
+  /// No description provided for @progressNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No rounds yet. Finish one and your results appear here.'**
+  String get progressNone;
+
+  /// No description provided for @progressPerLetter.
+  ///
+  /// In en, this message translates to:
+  /// **'How each letter is going'**
+  String get progressPerLetter;
+
+  /// hits out of attempts for one letter
+  ///
+  /// In en, this message translates to:
+  /// **'{hits}/{attempts}'**
+  String progressAttempts(int hits, int attempts);
+
+  /// No description provided for @progressUntried.
+  ///
+  /// In en, this message translates to:
+  /// **'not tried yet'**
+  String get progressUntried;
+
+  /// No description provided for @progressWeakest.
+  ///
+  /// In en, this message translates to:
+  /// **'Worth practising: {letter}'**
+  String progressWeakest(String letter);
+
+  /// No description provided for @progressRounds.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} rounds saved'**
+  String progressRounds(int count);
+
+  /// No description provided for @progressClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear history'**
+  String get progressClear;
+
+  /// No description provided for @progressCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'History cleared'**
+  String get progressCleared;
+
+  /// No description provided for @a11yPracticeTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Make the shape for letter {letter}'**
+  String a11yPracticeTarget(String letter);
+
+  /// No description provided for @a11yPracticeHeld.
+  ///
+  /// In en, this message translates to:
+  /// **'Letter {letter} held'**
+  String a11yPracticeHeld(String letter);
+
+  /// No description provided for @a11yPracticeMissed.
+  ///
+  /// In en, this message translates to:
+  /// **'Letter {letter} missed'**
+  String a11yPracticeMissed(String letter);
 }
 
 class _AppLocalizationsDelegate

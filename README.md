@@ -443,6 +443,53 @@ Anything that needs real camera hardware: opening the camera, MediaPipe model lo
 
 ---
 
+## Practice mode
+
+The home screen answers *"what shape am I making?"*. That is a demonstration.
+Practice answers *"am I getting better?"*, which is what somebody actually
+learning needs — and it is the only place a result is written down.
+
+A round presents each letter in turn and asks you to **hold** that mouth shape.
+
+**Holding, not hitting.** A letter counts only once the shape has been held for
+about 700 ms. One good frame is not evidence of anything: the classifier passes
+through neighbouring shapes on its way to the right one, so crediting a single
+frame would score the shapes you merely flickered through. Lose the shape and
+the hold restarts from nothing — accumulating it across gaps would pass someone
+who flickered onto the letter repeatedly without ever holding it.
+
+**Nobody gets stranded.** Each letter has a 12-second limit. Run out and it is
+marked missed and the round moves on, so a shape you cannot yet make does not
+end the session.
+
+**The order changes every round.** In a fixed order people learn the sequence
+rather than the shapes, and start forming the next one before it is asked for.
+
+**A near miss is not the same as a miss.** The best confidence reached is kept
+even for a failed attempt, so "you were close on C" can be told apart from
+"you were nowhere near".
+
+## Progress
+
+Every finished round is saved on the phone — there is no network code in this
+app and practice data is not the place to introduce any.
+
+The screen shows how each letter is going, and the line that matters is at the
+bottom: **which shape to work on next**. A letter tried fewer than three times
+is never named as your weakness, because one unlucky attempt is not evidence.
+Untried letters still get a row — knowing you have never attempted C is itself
+useful.
+
+History is capped at 200 rounds. `shared_preferences` loads wholly into memory
+at start-up, so an unbounded list would slow the launch a little more every time
+you practised. A row that cannot be read — written by an older version, or a
+write cut short — is skipped rather than costing you the rest of your history.
+
+`PracticeHistoryStore.toCsv` renders the history as CSV for a report; the rows
+drop straight into a spreadsheet.
+
+---
+
 ## Languages and accessibility
 
 The app ships in **English, Arabic, Spanish and French**, and picks the phone's
@@ -524,7 +571,6 @@ Stated honestly — see [`REFACTOR_REPORT.md` §9](REFACTOR_REPORT.md) for the f
 - **Lighting, camera angle and distance affect the results.**
 - **One face only** (`setNumFaces(1)`).
 - **About 7 analyses per second**, a deliberate trade-off for battery life.
-- **Onboarding appears on every launch** — no "already seen" flag is saved yet.
 - **iOS has not been tested on a physical device.** The Swift bridge mirrors the Kotlin one and is structurally complete.
 - **The JDK is not configured by the repository.** `android/gradle.properties` is now free of machine-specific paths, so each computer points Flutter at its own JDK 17 once, via the setup script or `flutter config --jdk-dir`. See the table above.
 

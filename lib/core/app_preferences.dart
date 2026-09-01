@@ -16,9 +16,11 @@ class AppPreferences {
     this.localeCode,
     this.hapticsEnabled = true,
     this.announceDetections = true,
+    this.onboardingSeen = false,
   });
 
   static const localeKey = 'locale_code';
+  static const onboardingSeenKey = 'onboarding_seen';
   static const hapticsKey = 'haptics_enabled';
   static const announceKey = 'announce_detections';
 
@@ -39,6 +41,12 @@ class AppPreferences {
   /// because the result only ever appears as text that never takes focus.
   final bool announceDetections;
 
+  /// Whether the three intro pages have already been read.
+  ///
+  /// They used to be shown on every single launch, which is fine the first
+  /// time and irritating the twentieth.
+  final bool onboardingSeen;
+
   /// The languages the app ships with, taken from the generated localizations
   /// so this list cannot drift away from the .arb files.
   static List<Locale> get supportedLocales => AppLocalizations.supportedLocales;
@@ -55,6 +63,7 @@ class AppPreferences {
       localeCode: isSupported(stored) ? stored : null,
       hapticsEnabled: prefs.getBool(hapticsKey) ?? true,
       announceDetections: prefs.getBool(announceKey) ?? true,
+      onboardingSeen: prefs.getBool(onboardingSeenKey) ?? false,
     );
   }
 
@@ -75,6 +84,7 @@ class AppPreferences {
     }
     await prefs.setBool(hapticsKey, hapticsEnabled);
     await prefs.setBool(announceKey, announceDetections);
+    await prefs.setBool(onboardingSeenKey, onboardingSeen);
   }
 
   AppPreferences copyWith({
@@ -82,11 +92,13 @@ class AppPreferences {
     bool clearLocale = false,
     bool? hapticsEnabled,
     bool? announceDetections,
+    bool? onboardingSeen,
   }) {
     return AppPreferences(
       localeCode: clearLocale ? null : (localeCode ?? this.localeCode),
       hapticsEnabled: hapticsEnabled ?? this.hapticsEnabled,
       announceDetections: announceDetections ?? this.announceDetections,
+      onboardingSeen: onboardingSeen ?? this.onboardingSeen,
     );
   }
 
@@ -95,10 +107,12 @@ class AppPreferences {
       other is AppPreferences &&
       other.localeCode == localeCode &&
       other.hapticsEnabled == hapticsEnabled &&
-      other.announceDetections == announceDetections;
+      other.announceDetections == announceDetections &&
+      other.onboardingSeen == onboardingSeen;
 
   @override
-  int get hashCode => Object.hash(localeCode, hapticsEnabled, announceDetections);
+  int get hashCode => Object.hash(
+      localeCode, hapticsEnabled, announceDetections, onboardingSeen);
 }
 
 /// Holds the live [AppPreferences] and writes changes back to the phone.
@@ -128,6 +142,9 @@ class AppPreferencesController extends ValueNotifier<AppPreferences> {
 
   Future<void> setAnnounceDetections(bool enabled) =>
       update(value.copyWith(announceDetections: enabled));
+
+  Future<void> markOnboardingSeen() =>
+      update(value.copyWith(onboardingSeen: true));
 }
 
 /// Makes the controller reachable from any screen.

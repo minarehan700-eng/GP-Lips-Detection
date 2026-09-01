@@ -82,6 +82,8 @@ void main() {
     });
   });
 
+  _handoffTests();
+
   group('resume', () {
     test('tries to open the camera again after a suspend', () async {
       final session = LipsCameraSession();
@@ -92,6 +94,35 @@ void main() {
       // No camera exists in a test, so the attempt fails — but it must be an
       // attempt, not a silent no-op, or the screen stays black on return.
       expect(session.error, isNotNull);
+    });
+  });
+}
+
+/// Extra checks for the hand-off used when one screen opens another that also
+/// wants the camera.
+void _handoffTests() {
+  group('handing the camera over', () {
+    test('suspend leaves nothing holding the device', () async {
+      // Two CameraControllers cannot hold the same camera at once. The
+      // practice screen opens its own, so the home screen has to have let go
+      // first, and "let go" means camera == null, not merely stopped.
+      final session = LipsCameraSession()
+        ..cameraPreviewSize = const Size(640, 480);
+
+      await session.suspend();
+
+      expect(session.camera, isNull);
+      expect(session.cameraPreviewSize, isNull);
+    });
+
+    test('suspending twice is harmless', () async {
+      // Lifecycle callbacks can arrive more than once for one transition.
+      final session = LipsCameraSession();
+
+      await session.suspend();
+      await expectLater(session.suspend(), completes);
+
+      expect(session.camera, isNull);
     });
   });
 }
