@@ -69,14 +69,43 @@ class DetectorSettings {
   ///
   /// Output: the stored values, or the defaults for any value never saved.
   /// This is why the app works correctly on a completely fresh install.
+  /// Every value is clamped to its slider range on the way out. What is on
+  /// disk is not necessarily what this app wrote: an older build may have
+  /// stored a value from a range that has since changed, and the stored file
+  /// is editable on a rooted or debug device. The Settings screen already
+  /// clamps before handing a value to a [Slider], which would otherwise throw;
+  /// clamping here means the *detectors* are given a usable threshold too,
+  /// instead of one that silently disables detection.
   static Future<DetectorSettings> load() async {
     final prefs = await SharedPreferences.getInstance();
     return DetectorSettings(
-      mouthOpenThreshold: prefs.getDouble(mouthOpenKey) ?? defaultMouthOpen,
-      motionThreshold: prefs.getDouble(motionKey) ?? defaultMotion,
-      letterMinScore:
-          prefs.getDouble(letterMinScoreKey) ?? defaultLetterMinScore,
+      mouthOpenThreshold: _within(
+        prefs.getDouble(mouthOpenKey) ?? defaultMouthOpen,
+        mouthOpenMin,
+        mouthOpenMax,
+      ),
+      motionThreshold: _within(
+        prefs.getDouble(motionKey) ?? defaultMotion,
+        motionMin,
+        motionMax,
+      ),
+      letterMinScore: _within(
+        prefs.getDouble(letterMinScoreKey) ?? defaultLetterMinScore,
+        letterMinScoreMin,
+        letterMinScoreMax,
+      ),
     );
+  }
+
+  /// Brings one stored value back inside its allowed range.
+  ///
+  /// A NaN cannot be compared into range — `clamp` returns NaN for it — so it
+  /// is replaced by the midpoint of the range instead of being passed on.
+  static double _within(double value, double min, double max) {
+    if (value.isNaN) {
+      return (min + max) / 2;
+    }
+    return value.clamp(min, max);
   }
 
   /// Writes these settings to the phone so they survive a restart.

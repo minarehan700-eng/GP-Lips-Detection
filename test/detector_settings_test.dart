@@ -84,5 +84,53 @@ void main() {
         ),
       );
     });
+
+    test('a value stored above its range is brought back to the maximum', () async {
+      SharedPreferences.setMockInitialValues({
+        DetectorSettings.mouthOpenKey: 9.5,
+        DetectorSettings.motionKey: 4.0,
+        DetectorSettings.letterMinScoreKey: 2.0,
+      });
+
+      final settings = await DetectorSettings.load();
+
+      expect(settings.mouthOpenThreshold, DetectorSettings.mouthOpenMax);
+      expect(settings.motionThreshold, DetectorSettings.motionMax);
+      expect(settings.letterMinScore, DetectorSettings.letterMinScoreMax);
+    });
+
+    test('a value stored below its range is brought back to the minimum', () async {
+      SharedPreferences.setMockInitialValues({
+        DetectorSettings.mouthOpenKey: -3.0,
+        DetectorSettings.motionKey: 0.0,
+        DetectorSettings.letterMinScoreKey: -0.5,
+      });
+
+      final settings = await DetectorSettings.load();
+
+      expect(settings.mouthOpenThreshold, DetectorSettings.mouthOpenMin);
+      expect(settings.motionThreshold, DetectorSettings.motionMin);
+      expect(settings.letterMinScore, DetectorSettings.letterMinScoreMin);
+    });
+
+    test('a stored NaN cannot leak through as a threshold', () async {
+      // clamp() returns NaN for a NaN input, so this needs handling of its
+      // own: a NaN threshold compares false against everything, which would
+      // switch detection off completely rather than loosen it.
+      SharedPreferences.setMockInitialValues({
+        DetectorSettings.mouthOpenKey: double.nan,
+      });
+
+      final settings = await DetectorSettings.load();
+
+      expect(settings.mouthOpenThreshold.isNaN, isFalse);
+      expect(
+        settings.mouthOpenThreshold,
+        inInclusiveRange(
+          DetectorSettings.mouthOpenMin,
+          DetectorSettings.mouthOpenMax,
+        ),
+      );
+    });
   });
 }

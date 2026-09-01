@@ -14,12 +14,14 @@ dependencies:
   image: ^4.3.0
   flutter_animate: ^4.5.2
   shared_preferences: ^2.3.2
-  path_provider: ^2.1.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  # Test-only. `camera` already pins this; naming it here lets the encoder
+  # tests build a real CameraImage instead of relying on a transitive package.
+  camera_platform_interface: ^2.13.1
 
 flutter:
   uses-material-design: true
