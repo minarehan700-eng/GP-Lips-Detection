@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lips_offline/application/lip_letter_detector.dart';
-import 'package:lips_offline/core/app_theme.dart';
+import 'package:lips_offline/l10n/app_localizations.dart';
 import 'package:lips_offline/widgets/lips_detection_panels.dart';
 
 import 'helpers/fake_frames.dart';
+import 'helpers/localized.dart';
 
 /// Tests for the panel that shows the detected letter and the practice chips.
 ///
 /// This covers the main practice workflow: pick a target letter, then see
 /// "Matched!" when your mouth shape agrees with it.
 void main() {
+  late AppLocalizations en;
+
+  setUpAll(() async => en = await translationsFor(const Locale('en')));
+
   Future<void> pumpPanel(
     WidgetTester tester, {
     String? detectedLetter,
@@ -18,21 +23,18 @@ void main() {
     String? targetLetter,
     void Function(String letter)? onLetterTap,
   }) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.dark(),
-        home: Scaffold(
-          body: DetectedLetterPanel(
-            result: frame().copyWith(
-              detectedLetter: detectedLetter,
-              letterConfidence: confidence,
-            ),
-            targetLetter: targetLetter,
-            onLetterTap: onLetterTap ?? (_) {},
+    await tester.pumpWidget(localizedApp(
+      Scaffold(
+        body: DetectedLetterPanel(
+          result: frame().copyWith(
+            detectedLetter: detectedLetter,
+            letterConfidence: confidence,
           ),
+          targetLetter: targetLetter,
+          onLetterTap: onLetterTap ?? (_) {},
         ),
       ),
-    );
+    ));
     await tester.pumpAndSettle();
   }
 
@@ -48,7 +50,7 @@ void main() {
         (tester) async {
       await pumpPanel(tester, detectedLetter: 'C', confidence: 0.82);
 
-      expect(find.text('82% confidence'), findsOneWidget);
+      expect(find.text(en.confidencePercent(82)), findsOneWidget);
     });
 
     testWidgets('offers a chip for every supported letter', (tester) async {
@@ -68,7 +70,7 @@ void main() {
         targetLetter: 'C',
       );
 
-      expect(find.text('Matched!'), findsOneWidget);
+      expect(find.text(en.matched), findsOneWidget);
     });
 
     testWidgets('stays quiet when the detection differs from the target',
@@ -80,7 +82,7 @@ void main() {
         targetLetter: 'C',
       );
 
-      expect(find.text('Matched!'), findsNothing);
+      expect(find.text(en.matched), findsNothing);
     });
 
     testWidgets('does not say Matched! when no target has been chosen',
@@ -88,7 +90,7 @@ void main() {
       // Both the target and the detection are empty here; that is not a match.
       await pumpPanel(tester);
 
-      expect(find.text('Matched!'), findsNothing);
+      expect(find.text(en.matched), findsNothing);
     });
 
     testWidgets('tapping a chip reports which letter was tapped',

@@ -10,6 +10,26 @@ import '../domain/face_lips_result.dart';
 import '../infrastructure/camera_frame_encoder.dart';
 import '../infrastructure/mediapipe_face_landmark_extractor.dart';
 
+/// Why a start-up attempt failed, in a form the screen can translate.
+///
+/// The session has no BuildContext and so cannot look up wording itself.
+/// Reporting the *kind* of failure lets the screen say it in the user's
+/// language, and keeps the one case with no friendly wording — a raw platform
+/// message — clearly separate.
+enum SessionFailure {
+  /// The device reported no cameras at all.
+  noCamera,
+
+  /// Every resolution in [LipsCameraSession.resolutionPresetsToTry] failed.
+  cameraInit,
+
+  /// The MediaPipe model could not be loaded.
+  landmarker,
+
+  /// Anything else; [LipsCameraSession.errorDetail] carries the raw text.
+  unknown,
+}
+
 /// Runs the whole detection pipeline for the home screen.
 ///
 /// Why this class is needed:
@@ -60,8 +80,11 @@ class LipsCameraSession {
   /// The open camera, or null while starting up or after an error.
   CameraController? camera;
 
-  /// Text such as "Camera: 1280×720", shown under the preview.
-  String? cameraResolutionLabel;
+  /// Size of the camera preview, or null before one is open.
+  ///
+  /// Kept as numbers rather than a finished string: the label around them
+  /// ("Camera: 1280×720") is translated, so only the screen can build it.
+  Size? cameraPreviewSize;
 
   /// Front cameras show a mirrored image, which the mouth overlay must undo.
   bool isFrontCamera = true;
@@ -73,8 +96,12 @@ class LipsCameraSession {
   /// What the loading screen currently says.
   String initPhase = 'Starting...';
 
-  /// The error message to show, or null when everything is fine.
-  String? error;
+  /// Why start-up failed, or null when everything is fine.
+  SessionFailure? error;
+
+  /// The raw platform text behind [error], shown only for
+  /// [SessionFailure.unknown] where there is nothing friendlier to say.
+  String? errorDetail;
 
   /// The latest detection result the screen should display.
   FaceLipsResult result = FaceLipsResult.empty;
@@ -123,20 +150,29 @@ class LipsCameraSession {
 
       initPhase = 'Loading face landmarker...';
       onUpdate();
-      await _extractor.initialize();
+      try {
+        await _extractor.initialize();
+      } catch (e) {
+        error = SessionFailure.landmarker;
+        errorDetail = e.toString();
+        onUpdate();
+        return;
+      }
 
       initPhase = 'Starting camera...';
       onUpdate();
 
       final CameraDescription? chosenCamera = await _pickFrontCamera();
       if (chosenCamera == null) {
-        error = 'No camera found on this device.';
+        error = SessionFailure.noCamera;
+        onUpdate();
         return;
       }
 
       final CameraController? controller = await _openCamera(chosenCamera);
       if (controller == null) {
-        error = 'Failed to initialize camera at any supported resolution.';
+        error = SessionFailure.cameraInit;
+        onUpdate();
         return;
       }
 
@@ -150,18 +186,21 @@ class LipsCameraSession {
       await controller.startImageStream((image) => _onFrame(image, onUpdate));
 
       isFrontCamera = chosenCamera.lensDirection == CameraLensDirection.front;
-      cameraResolutionLabel = _describeResolution(controller);
+      cameraPreviewSize = controller.value.previewSize;
       initPhase = 'Ready';
       error = null;
+      errorDetail = null;
       onUpdate();
     } on PlatformException catch (e) {
       // Raised by the camera plugin or the method channel, e.g. when the user
       // denies camera permission.
-      error = e.message ?? e.code;
+      error = SessionFailure.unknown;
+      errorDetail = e.message ?? e.code;
       await _releaseFailedCamera();
       onUpdate();
     } catch (e) {
-      error = e.toString();
+      error = SessionFailure.unknown;
+      errorDetail = e.toString();
       await _releaseFailedCamera();
       onUpdate();
     }
@@ -174,7 +213,7 @@ class LipsCameraSession {
   Future<void> _releaseFailedCamera() async {
     final CameraController? failed = camera;
     camera = null;
-    cameraResolutionLabel = null;
+    cameraPreviewSize = null;
     if (failed != null) {
       try {
         await failed.dispose();
@@ -221,15 +260,6 @@ class LipsCameraSession {
       }
     }
     return null;
-  }
-
-  /// Builds the "Camera: 1280×720" label, or null if the size is unknown.
-  String? _describeResolution(CameraController controller) {
-    final previewSize = controller.value.previewSize;
-    if (previewSize == null) {
-      return null;
-    }
-    return 'Camera: ${previewSize.width.toInt()}×${previewSize.height.toInt()}';
   }
 
   /// Handles one camera frame: this is the heart of the app.
@@ -302,10 +332,11 @@ class LipsCameraSession {
   Future<void> reset(void Function() onUpdate) async {
     await camera?.dispose();
     camera = null;
-    cameraResolutionLabel = null;
+    cameraPreviewSize = null;
     _lipsingDetector.reset();
     _lipLetterDetector.reset();
     error = null;
+    errorDetail = null;
     initPhase = 'Starting...';
     result = FaceLipsResult.empty;
     onUpdate();
@@ -325,7 +356,7 @@ class LipsCameraSession {
   Future<void> suspend() async {
     final CameraController? open = camera;
     camera = null;
-    cameraResolutionLabel = null;
+    cameraPreviewSize = null;
     result = FaceLipsResult.empty;
     if (open != null) {
       try {

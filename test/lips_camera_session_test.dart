@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lips_offline/application/lips_camera_session.dart';
 import 'package:lips_offline/domain/face_lips_result.dart';
@@ -25,7 +26,7 @@ void main() {
 
     test('clears what the screen was showing', () async {
       final session = LipsCameraSession()
-        ..cameraResolutionLabel = 'Camera: 1280×720'
+        ..cameraPreviewSize = const Size(1280, 720)
         ..result = const FaceLipsResult(
           faceDetected: true,
           mouthOpen: 0.9,
@@ -41,7 +42,7 @@ void main() {
       // background would be wrong by the time the user came back.
       expect(session.result.faceDetected, isFalse);
       expect(session.result.isLipsing, isFalse);
-      expect(session.cameraResolutionLabel, isNull);
+      expect(session.cameraPreviewSize, isNull);
     });
   });
 
@@ -67,7 +68,7 @@ void main() {
       await session.initialize(() {});
 
       expect(session.camera, isNull);
-      expect(session.cameraResolutionLabel, isNull);
+      expect(session.cameraPreviewSize, isNull);
     });
 
     test('retrying after a failure still ends in a reportable state', () async {

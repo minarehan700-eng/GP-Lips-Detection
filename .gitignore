@@ -66,3 +66,4 @@ key.properties
 # Flutter generated (often recreated)
 .flutter-plugins
 *.iml
+l10n_missing.txt

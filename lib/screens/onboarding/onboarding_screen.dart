@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/app_navigation.dart';
+import '../../l10n/app_localizations.dart';
 import '../../widgets/gradient_background.dart';
 import '../home_screen.dart';
 import 'onboarding_page.dart';
@@ -21,9 +22,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   /// Index of the page on screen, used to fill the dots and the button label.
   int _currentPage = 0;
 
-  static const _pages = OnboardingPageData.pages;
-
-  bool get _isLastPage => _currentPage >= _pages.length - 1;
+  bool get _isLastPage => _currentPage >= OnboardingPageData.pageCount - 1;
 
   @override
   void dispose() {
@@ -55,27 +54,31 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final pages = OnboardingPageData.pages(l10n);
     return Scaffold(
       body: GradientBackground(
         child: SafeArea(
           child: Column(
             children: [
               Align(
-                alignment: Alignment.centerRight,
+                // centerEnd, not centerRight: in Arabic the whole layout
+                // mirrors and Skip belongs on the left.
+                alignment: AlignmentDirectional.centerEnd,
                 child: TextButton(
                   onPressed: _goHome,
-                  child: const Text('Skip'),
+                  child: Text(l10n.skip),
                 ),
               ),
               Expanded(
                 child: PageView.builder(
                   controller: _pageController,
-                  itemCount: _pages.length,
+                  itemCount: pages.length,
                   onPageChanged: (index) => setState(() => _currentPage = index),
-                  itemBuilder: (_, index) => OnboardingPage(data: _pages[index]),
+                  itemBuilder: (_, index) => OnboardingPage(data: pages[index]),
                 ),
               ),
-              _PageDots(count: _pages.length, index: _currentPage),
+              _PageDots(count: pages.length, index: _currentPage),
               const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
@@ -83,7 +86,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   width: double.infinity,
                   child: FilledButton(
                     onPressed: _onNext,
-                    child: Text(_isLastPage ? 'Get Started' : 'Next'),
+                    child: Text(_isLastPage ? l10n.getStarted : l10n.next),
                   ),
                 ),
               ),

@@ -18,11 +18,27 @@ class OnboardingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+    // Scrollable, and centred only while there is room to spare.
+    //
+    // At the largest accessibility text sizes this page needs far more height
+    // than the screen has — a fixed Column overflowed by well over a thousand
+    // pixels, which the user sees as clipped text behind warning stripes.
+    // Letting it scroll costs nothing at normal sizes, where the content still
+    // sits in the middle of the page.
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          // clamped at zero: on a short window, or with a tall system inset,
+          // the subtraction goes negative and BoxConstraints rejects it.
+          minHeight: (MediaQuery.sizeOf(context).height -
+                  MediaQuery.paddingOf(context).vertical -
+                  32)
+              .clamp(0.0, double.infinity),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
           Container(
             width: 88,
             height: 88,
@@ -83,7 +99,8 @@ class OnboardingPage extends StatelessWidget {
               ),
             ),
           ],
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -1,0 +1,17 @@
+# Where the translations live and what to generate from them.
+#
+# This Flutter version writes the generated Dart beside the .arb files, in
+# lib/l10n/, so it is committed like any other source. Never edit those files
+# by hand: `flutter gen-l10n` overwrites them. app_en.arb is the source of
+# truth, and a key added there must be added to every other .arb too.
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+# Fail the build if a language is missing a key, rather than silently falling
+# back to English at runtime where nobody notices.
+untranslated-messages-file: l10n_missing.txt
+# AppLocalizations.of(context) returns non-null. A screen can only build below
+# MaterialApp, where the delegate is always installed, so the null case cannot
+# happen and checking for it at every call site would be noise.
+nullable-getter: false

@@ -443,6 +443,54 @@ Anything that needs real camera hardware: opening the camera, MediaPipe model lo
 
 ---
 
+## Languages and accessibility
+
+The app ships in **English, Arabic, Spanish and French**, and picks the phone's
+language on first launch. It can be changed at any time under **Settings →
+Language**, and the choice is remembered.
+
+Arabic is a right-to-left language, so choosing it mirrors the whole interface:
+the Skip button moves to the left, sliders run the other way, and text aligns
+to the right. That is handled by Flutter once the locale is set, which is why
+positions are written as `AlignmentDirectional.centerEnd` rather than
+`centerRight` — the latter would stay stubbornly on the right in Arabic.
+
+### Accessibility
+
+| Feature | What it does | Where |
+|---------|--------------|-------|
+| **Spoken detections** | Each detected letter, and the face appearing or disappearing, is sent to TalkBack or VoiceOver. Without this a screen-reader user gets nothing at all, because the result only ever appears as text that never takes focus | Settings → *Speak detections aloud* |
+| **Vibrate on a match** | The phone buzzes when your mouth shape matches the letter you are practising. This is the one confirmation that works while you are looking at your own face rather than the screen — and for a deaf user, a sound would not | Settings → *Vibrate on a match* |
+| **Labelled letter chips** | Each chip announces its letter, whether it is the current practice target, and what tapping will do. Selection is not signalled by colour alone | `LetterChip` in `lib/widgets/detection_ui.dart` |
+| **Large text** | Onboarding scrolls instead of clipping when the system font is scaled up. At 2× it needed about 1400 px more height than the screen has | `lib/screens/onboarding/onboarding_page.dart` |
+
+Both switches are on by default, and both are announced only when the detection
+*changes* — the pipeline produces about seven results a second, and speaking
+every one of them would make a screen reader unusable.
+
+### Adding a language
+
+1. Copy `lib/l10n/app_en.arb` to `lib/l10n/app_<code>.arb` and translate the
+   values. Leave the keys and anything in `{braces}` exactly as they are — a
+   placeholder that is renamed throws at runtime, and one that is dropped
+   prints as literal text.
+2. Run `flutter gen-l10n` (or just `flutter pub get`).
+3. Add the language's own name to `_LanguagePicker._endonyms` in
+   `lib/screens/settings_screen.dart` — someone looking for Arabic is looking
+   for "العربية", not "Arabic".
+4. Run `flutter test test/localization_test.dart`. It fails if the new file is
+   missing a key, invents one, changes a placeholder, or leaves a string
+   identical to the English original.
+
+Nothing else needs touching: the picker and the supported-locale list are both
+built from the `.arb` files.
+
+> **A note on the translations.** The English and Arabic wording was written
+> directly. The Spanish and French are careful but have not been reviewed by a
+> native speaker — worth doing before publishing to those markets.
+
+---
+
 ## Common Errors and Solutions
 
 > **Before anything else, run the setup script once.** `setup_windows.bat` on Windows, or

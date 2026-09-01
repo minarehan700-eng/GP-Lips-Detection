@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../core/app_navigation.dart';
+import '../l10n/app_localizations.dart';
 import '../widgets/animated_brand_text.dart';
 import '../widgets/gradient_background.dart';
 import 'onboarding/onboarding_screen.dart';
@@ -59,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen> {
               left: 0,
               right: 0,
               child: Text(
-                'Detect lipsing and mouth letters A–E',
+                AppLocalizations.of(context).splashTagline,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       color: Colors.white70,

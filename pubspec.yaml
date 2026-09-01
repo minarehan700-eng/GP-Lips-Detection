@@ -9,6 +9,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: any
   cupertino_icons: ^1.0.8
   camera: ^0.11.0+1
   image: ^4.3.0
@@ -25,3 +28,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  # Turns the .arb files under lib/l10n into AppLocalizations at build time.
+  generate: true

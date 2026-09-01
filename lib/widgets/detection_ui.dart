@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/app_theme.dart';
+import '../l10n/app_localizations.dart';
 import 'glass_card.dart';
 
 /// A small card showing one status: a label on top, a coloured value below.
@@ -93,39 +94,63 @@ class LetterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final borderColor = target
         ? AppTheme.brandBlue
         : active
             ? AppTheme.brandTeal
             : Colors.white24;
 
-    return GestureDetector(
+    // A bare GestureDetector is invisible to a screen reader: no role, no
+    // name, no hint about what tapping does. Semantics supplies all three, and
+    // the label states whether this letter is the current target, so that
+    // state is not carried by colour alone.
+    return Semantics(
+      button: true,
+      selected: target,
+      label: target
+          ? l10n.a11yLetterChipSelected(letter)
+          : l10n.a11yLetterChip(letter),
+      // The action has to be declared here as well as on the GestureDetector.
+      // A screen reader activates a node through its semantics action, not by
+      // tapping a point on the glass, so without this the chip announced
+      // itself as a button that could not actually be pressed.
       onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: active
-              ? AppTheme.brandTeal.withValues(alpha: 0.25)
-              : target
-                  ? AppTheme.brandBlue.withValues(alpha: 0.18)
-                  : Colors.white.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: borderColor,
-            width: active || target ? 1.5 : 1,
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          decoration: BoxDecoration(
+            color: active
+                ? AppTheme.brandTeal.withValues(alpha: 0.25)
+                : target
+                    ? AppTheme.brandBlue.withValues(alpha: 0.18)
+                    : Colors.white.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: borderColor,
+              width: active || target ? 1.5 : 1,
+            ),
           ),
-        ),
-        child: Text(
-          letter,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: active
-                    ? AppTheme.brandTeal
-                    : target
-                        ? AppTheme.brandBlue
-                        : Colors.white54,
-                fontWeight: active || target ? FontWeight.w700 : FontWeight.w500,
-              ),
+          // The letter is already inside the label above; leaving this Text
+          // exposed too makes the reader announce it twice. Excluded here,
+          // narrowly, rather than on the Semantics wrapper - doing it there
+          // also discarded the tap action.
+          child: ExcludeSemantics(
+            child: Text(
+              letter,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: active
+                        ? AppTheme.brandTeal
+                        : target
+                            ? AppTheme.brandBlue
+                            : Colors.white54,
+                    fontWeight:
+                        active || target ? FontWeight.w700 : FontWeight.w500,
+                  ),
+            ),
+          ),
         ),
       ),
     );
@@ -160,7 +185,7 @@ class MouthMetricTile extends StatelessWidget {
           children: [
             Text(label, style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: 4),
-            Text('$value%', style: Theme.of(context).textTheme.titleSmall),
+            Text(AppLocalizations.of(context).percentValue(value), style: Theme.of(context).textTheme.titleSmall),
           ],
         ),
       ),

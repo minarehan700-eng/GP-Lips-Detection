@@ -1,0 +1,256 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Arabic (`ar`).
+class AppLocalizationsAr extends AppLocalizations {
+  AppLocalizationsAr([String locale = 'ar']) : super(locale);
+
+  @override
+  String get appTitle => 'Lips Offline';
+
+  @override
+  String get brandName => 'Lips';
+
+  @override
+  String get splashTagline => 'اكتشاف النطق الصامت وحروف الفم من A إلى E';
+
+  @override
+  String get onboardLipsingTitle => 'ما هو النطق الصامت؟';
+
+  @override
+  String get onboardLipsingBody =>
+      'النطق الصامت هو تحريك الشفاه بالكلمات دون صوت، وهو شائع في لغة الإشارة. يراقب هذا التطبيق شكل فمك لحظة بلحظة ويخبرك عند اكتشاف النطق الصامت.';
+
+  @override
+  String get onboardLipsingPoint1 => 'يجب أن يكون وجهك ظاهرًا أمام الكاميرا';
+
+  @override
+  String get onboardLipsingPoint2 => 'المربع الأخضر يحدد منطقة الفم';
+
+  @override
+  String get onboardLipsingPoint3 =>
+      '«النطق الصامت: نعم» تعني وجود حركة نشطة للفم';
+
+  @override
+  String get onboardLettersTitle => 'الحروف A – E';
+
+  @override
+  String get onboardLettersBody =>
+      'يتتبع MediaPipe معالم الفم ويحوّل أشكاله إلى حروف نطق من A إلى E.';
+
+  @override
+  String get onboardLetterA => 'A — فم مفتوح على اتساعه';
+
+  @override
+  String get onboardLetterB => 'B — شفتان مغلقتان';
+
+  @override
+  String get onboardLetterC => 'C — شفتان مستديرتان';
+
+  @override
+  String get onboardLetterD => 'D — فتحة صغيرة';
+
+  @override
+  String get onboardLetterE => 'E — شكل الابتسامة';
+
+  @override
+  String get onboardCameraTitle => 'استخدام الكاميرا';
+
+  @override
+  String get onboardCameraBody =>
+      'أمسك الهاتف على مستوى العين، وواجه الكاميرا الأمامية، واحرص على إضاءة جيدة.';
+
+  @override
+  String get onboardCameraPoint1 => 'اضغط على حرف لتختاره هدفًا للتدريب';
+
+  @override
+  String get onboardCameraPoint2 =>
+      'عدّل الحدود من الإعدادات إذا لم يكن الاكتشاف دقيقًا';
+
+  @override
+  String get onboardCameraPoint3 => 'يعمل بالكامل دون إنترنت';
+
+  @override
+  String get skip => 'تخطٍ';
+
+  @override
+  String get next => 'التالي';
+
+  @override
+  String get getStarted => 'لنبدأ';
+
+  @override
+  String get homeTitle => 'اكتشاف الشفاه';
+
+  @override
+  String get settings => 'الإعدادات';
+
+  @override
+  String get face => 'الوجه';
+
+  @override
+  String get detected => 'مُكتشَف';
+
+  @override
+  String get notDetected => 'غير مُكتشَف';
+
+  @override
+  String get lipsing => 'النطق الصامت';
+
+  @override
+  String get yes => 'نعم';
+
+  @override
+  String get no => 'لا';
+
+  @override
+  String get letterShapeHint =>
+      'ابتسامة=E · استدارة=C · إغلاق=B · فتح واسع=A · فتح بسيط=D';
+
+  @override
+  String get detectedLetter => 'الحرف المُكتشَف';
+
+  @override
+  String confidencePercent(int percent) {
+    return 'نسبة الثقة $percent٪';
+  }
+
+  @override
+  String get matched => 'تطابق!';
+
+  @override
+  String get practiceTarget => 'هدف التدريب';
+
+  @override
+  String get mouthOpen => 'انفتاح الفم';
+
+  @override
+  String get pucker => 'ضم الشفتين';
+
+  @override
+  String get smile => 'الابتسامة';
+
+  @override
+  String get closeShape => 'إغلاق الشفتين';
+
+  @override
+  String get funnel => 'استدارة الشفتين';
+
+  @override
+  String get stretch => 'مط الشفتين';
+
+  @override
+  String percentValue(int percent) {
+    return '$percent٪';
+  }
+
+  @override
+  String cameraResolution(int width, int height) {
+    return 'الكاميرا: $width×$height';
+  }
+
+  @override
+  String get detectorThresholds => 'حدود الاكتشاف';
+
+  @override
+  String get mouthOpenThreshold => 'حد انفتاح الفم';
+
+  @override
+  String get mouthOpenThresholdHelp =>
+      'كلما زاد، لزم فتح الفم أكثر ليُحتسب نطقًا صامتًا';
+
+  @override
+  String get motionThreshold => 'حد الحركة';
+
+  @override
+  String get motionThresholdHelp =>
+      'كلما قل، احتُسبت الحركات الصغيرة نطقًا صامتًا';
+
+  @override
+  String get letterMinScore => 'أدنى درجة للحرف';
+
+  @override
+  String get letterMinScoreHelp => 'كلما زاد، صار تصنيف A–E أكثر صرامة';
+
+  @override
+  String get saveSettings => 'حفظ الإعدادات';
+
+  @override
+  String get settingsSaved => 'تم حفظ الإعدادات';
+
+  @override
+  String get resetDefaults => 'استعادة الإعدادات الافتراضية';
+
+  @override
+  String get language => 'اللغة';
+
+  @override
+  String get languageSystem => 'حسب لغة الجهاز';
+
+  @override
+  String get errorNoCamera => 'لا توجد كاميرا في هذا الجهاز.';
+
+  @override
+  String get errorCameraInit => 'تعذّر تشغيل الكاميرا بأي دقة مدعومة.';
+
+  @override
+  String get errorLandmarkerMissing =>
+      'تعذّر تحميل نموذج معالم الوجه. تأكد من وجود الملف face_landmarker.task داخل android/app/src/main/assets (وداخل حزمة iOS Runner).';
+
+  @override
+  String errorInitFailed(String error) {
+    return 'فشل بدء التشغيل:\n$error\n\nتأكد من إرفاق ملف النموذج ومن منح إذن الكاميرا.';
+  }
+
+  @override
+  String get tryAgain => 'حاول مرة أخرى';
+
+  @override
+  String get a11yOpenSettings => 'فتح الإعدادات';
+
+  @override
+  String get a11yCameraPreview =>
+      'معاينة مباشرة من الكاميرا، ويجري تتبع فمك هنا.';
+
+  @override
+  String a11yLetterChip(String letter) {
+    return 'الحرف $letter. انقر مرتين للتدرب عليه.';
+  }
+
+  @override
+  String a11yLetterChipSelected(String letter) {
+    return 'الحرف $letter، وهو هدف تدريبك الحالي. انقر مرتين لإيقاف التدرب عليه.';
+  }
+
+  @override
+  String a11yAnnounceLetter(String letter, int percent) {
+    return 'اكتُشف الحرف $letter بنسبة ثقة $percent بالمئة';
+  }
+
+  @override
+  String a11yAnnounceMatched(String letter) {
+    return 'تطابق الحرف $letter';
+  }
+
+  @override
+  String get a11yAnnounceFaceLost => 'لم يعد الوجه ظاهرًا';
+
+  @override
+  String get a11yAnnounceFaceFound => 'تم اكتشاف الوجه';
+
+  @override
+  String get haptics => 'اهتزاز عند التطابق';
+
+  @override
+  String get hapticsHelp =>
+      'يهتز الهاتف عندما يطابق شكل فمك الحرف الذي تتدرب عليه';
+
+  @override
+  String get announceDetections => 'نطق الاكتشافات بصوت عالٍ';
+
+  @override
+  String get announceDetectionsHelp => 'يرسل كل حرف مُكتشَف إلى قارئ الشاشة';
+}

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../core/app_theme.dart';
+import '../core/app_preferences.dart';
 import '../core/detector_settings.dart';
+import '../l10n/app_localizations.dart';
 import '../widgets/glass_card.dart';
 import '../widgets/gradient_background.dart';
 
@@ -55,7 +57,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await _settings.save();
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Settings saved')),
+      SnackBar(content: Text(AppLocalizations.of(context).settingsSaved)),
     );
   }
 
@@ -69,10 +71,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final preferences = AppPreferencesScope.of(context);
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text(l10n.settings),
       ),
       body: GradientBackground(
         child: SafeArea(
@@ -86,7 +90,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 16),
                         child: Text(
-                          'Detector thresholds',
+                          l10n.detectorThresholds,
                           style: Theme.of(context).textTheme.headlineSmall,
                         ),
                       ),
@@ -97,42 +101,75 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _SliderRow(
-                              label: 'Mouth-open threshold',
+                              label: l10n.mouthOpenThreshold,
                               value: _settings.mouthOpenThreshold,
                               display: _settings.mouthOpenThreshold.toStringAsFixed(2),
                               min: DetectorSettings.mouthOpenMin,
                               max: DetectorSettings.mouthOpenMax,
                               divisions: DetectorSettings.mouthOpenDivisions,
-                              hint: 'Higher = mouth must open more to count as lipsing',
+                              hint: l10n.mouthOpenThresholdHelp,
                               onChanged: (v) => setState(
                                 () => _settings = _settings.copyWith(mouthOpenThreshold: v),
                               ),
                             ),
                             const SizedBox(height: 20),
                             _SliderRow(
-                              label: 'Motion threshold',
+                              label: l10n.motionThreshold,
                               value: _settings.motionThreshold,
                               display: _settings.motionThreshold.toStringAsFixed(3),
                               min: DetectorSettings.motionMin,
                               max: DetectorSettings.motionMax,
                               divisions: DetectorSettings.motionDivisions,
-                              hint: 'Lower = small mouth movement counts as lipsing',
+                              hint: l10n.motionThresholdHelp,
                               onChanged: (v) => setState(
                                 () => _settings = _settings.copyWith(motionThreshold: v),
                               ),
                             ),
                             const SizedBox(height: 20),
                             _SliderRow(
-                              label: 'Letter min-score',
+                              label: l10n.letterMinScore,
                               value: _settings.letterMinScore,
                               display: _settings.letterMinScore.toStringAsFixed(2),
                               min: DetectorSettings.letterMinScoreMin,
                               max: DetectorSettings.letterMinScoreMax,
                               divisions: DetectorSettings.letterMinScoreDivisions,
-                              hint: 'Higher = stricter A–E classification',
+                              hint: l10n.letterMinScoreHelp,
                               onChanged: (v) => setState(
                                 () => _settings = _settings.copyWith(letterMinScore: v),
                               ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: Text(
+                          l10n.language,
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                      ),
+                      GlassCard(
+                        borderRadius: 16,
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _LanguagePicker(preferences: preferences),
+                            const SizedBox(height: 8),
+                            SwitchListTile.adaptive(
+                              contentPadding: EdgeInsets.zero,
+                              value: preferences.value.hapticsEnabled,
+                              onChanged: preferences.setHaptics,
+                              title: Text(l10n.haptics),
+                              subtitle: Text(l10n.hapticsHelp),
+                            ),
+                            SwitchListTile.adaptive(
+                              contentPadding: EdgeInsets.zero,
+                              value: preferences.value.announceDetections,
+                              onChanged: preferences.setAnnounceDetections,
+                              title: Text(l10n.announceDetections),
+                              subtitle: Text(l10n.announceDetectionsHelp),
                             ),
                           ],
                         ),
@@ -143,7 +180,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         child: FilledButton.icon(
                           onPressed: _save,
                           icon: const Icon(Icons.save_rounded),
-                          label: const Text('Save Settings'),
+                          label: Text(l10n.saveSettings),
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -151,7 +188,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         width: double.infinity,
                         child: OutlinedButton(
                           onPressed: _resetToDefaults,
-                          child: const Text('Reset to defaults'),
+                          child: Text(l10n.resetDefaults),
                         ),
                       ),
                     ],
@@ -222,6 +259,55 @@ class _SliderRow extends StatelessWidget {
                 color: Colors.white60,
               ),
         ),
+      ],
+    );
+  }
+}
+
+/// Lets the user pick a language, or follow whatever the device is set to.
+///
+/// The list comes from the generated localizations, so a new .arb file appears
+/// here without this widget being touched. Each language is written in its own
+/// script — someone looking for Arabic is looking for "العربية", not "Arabic".
+class _LanguagePicker extends StatelessWidget {
+  const _LanguagePicker({required this.preferences});
+
+  final AppPreferencesController preferences;
+
+  /// What each shipped language calls itself.
+  static const _endonyms = <String, String>{
+    'en': 'English',
+    'ar': 'العربية',
+    'es': 'Español',
+    'fr': 'Français',
+  };
+
+  static String nameFor(String code) => _endonyms[code] ?? code.toUpperCase();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final codes = AppPreferences.supportedLocales
+        .map((locale) => locale.languageCode)
+        .toSet()
+        .toList()
+      ..sort();
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        ChoiceChip(
+          label: Text(l10n.languageSystem),
+          selected: preferences.value.localeCode == null,
+          onSelected: (_) => preferences.setLocale(null),
+        ),
+        for (final code in codes)
+          ChoiceChip(
+            label: Text(nameFor(code)),
+            selected: preferences.value.localeCode == code,
+            onSelected: (_) => preferences.setLocale(code),
+          ),
       ],
     );
   }

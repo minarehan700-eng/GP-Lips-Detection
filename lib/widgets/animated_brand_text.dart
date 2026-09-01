@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
+
 /// The app name on the splash screen, with a moving colour gradient and
 /// letters that bob gently up and down.
 ///
@@ -12,7 +14,7 @@ import 'package:flutter/material.dart';
 class AnimatedBrandText extends StatefulWidget {
   const AnimatedBrandText({
     super.key,
-    this.text = 'Lips',
+    this.text,
     this.fontSize = 34,
     this.weight = FontWeight.w800,
     this.letterSpacing = 0.6,
@@ -24,7 +26,9 @@ class AnimatedBrandText extends StatefulWidget {
   /// How much later each following letter starts its bob, in radians.
   static const double letterWavePhaseStep = 0.6;
 
-  final String text;
+  /// The word to animate. Null means "the app's own name", which has to be
+  /// resolved where there is a BuildContext rather than in the constructor.
+  final String? text;
   final double fontSize;
   final FontWeight weight;
   final double letterSpacing;
@@ -54,6 +58,10 @@ class _AnimatedBrandTextState extends State<AnimatedBrandText>
 
   @override
   Widget build(BuildContext context) {
+    // Resolved here rather than in the constructor: a default argument has to
+    // be a constant, and a translated name is only known once there is a
+    // context to look it up in.
+    final word = widget.text ?? AppLocalizations.of(context).brandName;
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, _) {
@@ -80,7 +88,7 @@ class _AnimatedBrandTextState extends State<AnimatedBrandText>
               // `letterIndex * 0.6` delays each letter a little, turning one
               // shared wave into a ripple along the word.
               for (var letterIndex = 0;
-                  letterIndex < widget.text.length;
+                  letterIndex < word.length;
                   letterIndex++)
                 Transform.translate(
                   offset: Offset(
@@ -91,7 +99,7 @@ class _AnimatedBrandTextState extends State<AnimatedBrandText>
                         AnimatedBrandText.letterWaveHeight,
                   ),
                   child: Text(
-                    widget.text[letterIndex],
+                    word[letterIndex],
                     style: TextStyle(
                       fontSize: widget.fontSize,
                       fontWeight: widget.weight,

@@ -1,0 +1,129 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "Lips Offline",
+  "@appTitle": {"description": "Application name, shown in the task switcher"},
+  "brandName": "Lips",
+  "@brandName": {"description": "The animated word on the splash screen"},
+  "splashTagline": "Detect lipsing and mouth letters A–E",
+  "@splashTagline": {"description": "One-line description under the app name"},
+
+  "onboardLipsingTitle": "What is lipsing?",
+  "onboardLipsingBody": "Lipsing is mouthing words without voice — common in sign language. This app watches your mouth shape in real time and tells you when lipsing is detected.",
+  "onboardLipsingPoint1": "Face must be visible in the camera",
+  "onboardLipsingPoint2": "Green box highlights your mouth region",
+  "onboardLipsingPoint3": "“Lipsing: Yes” means active mouth movement",
+
+  "onboardLettersTitle": "Letters A – E",
+  "onboardLettersBody": "MediaPipe tracks mouth landmarks and maps shapes to viseme letters A through E.",
+  "onboardLetterA": "A — wide open mouth",
+  "onboardLetterB": "B — lips closed",
+  "onboardLetterC": "C — rounded / puckered lips",
+  "onboardLetterD": "D — slightly open",
+  "onboardLetterE": "E — smile shape",
+
+  "onboardCameraTitle": "Using the camera",
+  "onboardCameraBody": "Hold the phone at eye level, face the front camera, and keep good lighting.",
+  "onboardCameraPoint1": "Tap a letter chip to set a practice target",
+  "onboardCameraPoint2": "Adjust thresholds in Settings if detection feels off",
+  "onboardCameraPoint3": "Works fully offline — no internet required",
+
+  "skip": "Skip",
+  "next": "Next",
+  "getStarted": "Get Started",
+
+  "homeTitle": "Lips Detection",
+  "settings": "Settings",
+  "face": "Face",
+  "detected": "Detected",
+  "notDetected": "Not detected",
+  "lipsing": "Lipsing",
+  "yes": "Yes",
+  "no": "No",
+  "letterShapeHint": "Smile=E · Round=C · Closed=B · Wide open=A · Slight open=D",
+
+  "detectedLetter": "Detected letter",
+  "confidencePercent": "{percent}% confidence",
+  "@confidencePercent": {
+    "description": "How sure the classifier is about the current letter",
+    "placeholders": {"percent": {"type": "int", "example": "82"}}
+  },
+  "matched": "Matched!",
+  "practiceTarget": "Practice target",
+
+  "mouthOpen": "Mouth open",
+  "pucker": "Pucker",
+  "smile": "Smile",
+  "closeShape": "Close",
+  "funnel": "Funnel",
+  "stretch": "Stretch",
+  "percentValue": "{percent}%",
+  "@percentValue": {
+    "description": "A bare percentage shown inside a meter",
+    "placeholders": {"percent": {"type": "int", "example": "40"}}
+  },
+  "cameraResolution": "Camera: {width}×{height}",
+  "@cameraResolution": {
+    "description": "Preview size shown under the camera",
+    "placeholders": {
+      "width": {"type": "int", "example": "1280"},
+      "height": {"type": "int", "example": "720"}
+    }
+  },
+
+  "detectorThresholds": "Detector thresholds",
+  "mouthOpenThreshold": "Mouth-open threshold",
+  "mouthOpenThresholdHelp": "Higher = mouth must open more to count as lipsing",
+  "motionThreshold": "Motion threshold",
+  "motionThresholdHelp": "Lower = small mouth movement counts as lipsing",
+  "letterMinScore": "Letter min-score",
+  "letterMinScoreHelp": "Higher = stricter A–E classification",
+  "saveSettings": "Save Settings",
+  "settingsSaved": "Settings saved",
+  "resetDefaults": "Reset to defaults",
+
+  "language": "Language",
+  "languageSystem": "Match my device",
+  "@languageSystem": {"description": "Use whatever language the phone is set to"},
+
+  "errorNoCamera": "No camera found on this device.",
+  "errorCameraInit": "Failed to initialize camera at any supported resolution.",
+  "errorLandmarkerMissing": "The face landmarker could not be loaded. Make sure face_landmarker.task exists in android/app/src/main/assets (and the iOS Runner bundle).",
+  "errorInitFailed": "Initialization failed:\n{error}\n\nMake sure the model file is bundled and camera permission is granted.",
+  "@errorInitFailed": {
+    "description": "Fallback when start-up fails for a reason with no friendlier wording",
+    "placeholders": {"error": {"type": "String", "example": "PlatformException(...)"}}
+  },
+  "tryAgain": "Try Again",
+
+  "a11yOpenSettings": "Open settings",
+  "@a11yOpenSettings": {"description": "Screen-reader label for the toolbar gear"},
+  "a11yCameraPreview": "Live camera preview. Your mouth is tracked here.",
+  "a11yLetterChip": "Letter {letter}. Double tap to practise this letter.",
+  "@a11yLetterChip": {
+    "placeholders": {"letter": {"type": "String", "example": "A"}}
+  },
+  "a11yLetterChipSelected": "Letter {letter}, currently your practice target. Double tap to stop practising it.",
+  "@a11yLetterChipSelected": {
+    "placeholders": {"letter": {"type": "String", "example": "A"}}
+  },
+  "a11yAnnounceLetter": "Letter {letter} detected, {percent} percent confidence",
+  "@a11yAnnounceLetter": {
+    "description": "Spoken aloud when a new letter is recognised",
+    "placeholders": {
+      "letter": {"type": "String", "example": "A"},
+      "percent": {"type": "int", "example": "82"}
+    }
+  },
+  "a11yAnnounceMatched": "Matched letter {letter}",
+  "@a11yAnnounceMatched": {
+    "placeholders": {"letter": {"type": "String", "example": "A"}}
+  },
+  "a11yAnnounceFaceLost": "Face no longer visible",
+  "a11yAnnounceFaceFound": "Face detected",
+
+  "haptics": "Vibrate on a match",
+  "hapticsHelp": "Buzz when your mouth shape matches the letter you are practising",
+  "announceDetections": "Speak detections aloud",
+  "announceDetectionsHelp": "Sends each detected letter to your screen reader"
+}

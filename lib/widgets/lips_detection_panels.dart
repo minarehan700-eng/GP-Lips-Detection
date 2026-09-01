@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../application/lip_letter_detector.dart';
 import '../core/app_theme.dart';
+import '../l10n/app_localizations.dart';
 import '../domain/face_lips_result.dart';
 import 'detection_ui.dart';
 import 'glass_card.dart';
@@ -30,6 +31,7 @@ class DetectedLetterPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final displayLetter = result.detectedLetter;
 
     // "Matched!" only makes sense when a target has actually been chosen —
@@ -42,7 +44,7 @@ class DetectedLetterPanel extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            'Detected letter',
+            l10n.detectedLetter,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Colors.white70,
                 ),
@@ -63,7 +65,7 @@ class DetectedLetterPanel extends StatelessWidget {
           if (displayLetter != null) ...[
             const SizedBox(height: 2),
             Text(
-              '${(result.letterConfidence * 100).round()}% confidence',
+              l10n.confidencePercent((result.letterConfidence * 100).round()),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Colors.white54,
                   ),
@@ -72,7 +74,7 @@ class DetectedLetterPanel extends StatelessWidget {
           if (matched) ...[
             const SizedBox(height: 4),
             Text(
-              'Matched!',
+              l10n.matched,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppTheme.successGreen,
                     fontWeight: FontWeight.w600,
@@ -121,6 +123,7 @@ class MouthMetricsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     // Clamped before scaling so an out-of-range value can never print
     // something like "132%".
     final mouthPct = (result.mouthOpen.clamp(0.0, 1.0) * 100).round();
@@ -134,9 +137,9 @@ class MouthMetricsPanel extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Mouth open', style: Theme.of(context).textTheme.titleSmall),
+              Text(l10n.mouthOpen, style: Theme.of(context).textTheme.titleSmall),
               Text(
-                '$mouthPct%',
+                l10n.percentValue(mouthPct),
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       color: AppTheme.brandTeal,
                       fontWeight: FontWeight.w600,
@@ -158,12 +161,12 @@ class MouthMetricsPanel extends StatelessWidget {
           Row(
             children: [
               MouthMetricTile(
-                label: 'Pucker',
+                label: l10n.pucker,
                 value: (result.mouthPucker * 100).round(),
               ),
               const SizedBox(width: 10),
               MouthMetricTile(
-                label: 'Smile',
+                label: l10n.smile,
                 value: (result.smile * 100).round(),
               ),
             ],
@@ -172,17 +175,17 @@ class MouthMetricsPanel extends StatelessWidget {
           Row(
             children: [
               MouthMetricTile(
-                label: 'Close',
+                label: l10n.closeShape,
                 value: (result.mouthClose * 100).round(),
               ),
               const SizedBox(width: 10),
               MouthMetricTile(
-                label: 'Funnel',
+                label: l10n.funnel,
                 value: (result.mouthFunnel * 100).round(),
               ),
               const SizedBox(width: 10),
               MouthMetricTile(
-                label: 'Stretch',
+                label: l10n.stretch,
                 value: (result.mouthStretch * 100).round(),
               ),
             ],
