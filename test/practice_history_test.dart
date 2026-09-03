@@ -18,7 +18,12 @@ void main() {
       finishedAt: at ?? DateTime(2026, 1, 1),
       results: [
         for (final (letter, ok) in results)
-          (letter: letter, succeeded: ok, bestConfidence: ok ? 0.8 : 0.2),
+          (
+            letter: letter,
+            succeeded: ok,
+            bestConfidence: ok ? 0.8 : 0.2,
+            confusedWith: null,
+          ),
       ],
       totalMilliseconds: 1000 * results.length,
     );

@@ -19,7 +19,8 @@ class SessionRecord {
   final DateTime finishedAt;
 
   /// Whether each attempted letter was held successfully, in order.
-  final List<({String letter, bool succeeded, double bestConfidence})> results;
+  final List<({String letter, bool succeeded, double bestConfidence, String? confusedWith})>
+      results;
 
   final int totalMilliseconds;
 
@@ -54,7 +55,8 @@ class SessionRecord {
           (
             letter: a.letter,
             succeeded: a.succeeded,
-            bestConfidence: a.bestConfidence
+            bestConfidence: a.bestConfidence,
+            confusedWith: a.confusedWith,
           ),
       ],
       totalMilliseconds:
@@ -67,7 +69,14 @@ class SessionRecord {
         'ms': totalMilliseconds,
         'results': [
           for (final r in results)
-            {'l': r.letter, 'ok': r.succeeded, 'c': r.bestConfidence},
+            {
+              'l': r.letter,
+              'ok': r.succeeded,
+              'c': r.bestConfidence,
+              // Omitted when there was no clear confusion, so old records stay
+              // readable and new ones stay small.
+              if (r.confusedWith != null) 'x': r.confusedWith,
+            },
         ],
       };
 
@@ -85,7 +94,8 @@ class SessionRecord {
     if (at is! int || list is! List) {
       return null;
     }
-    final results = <({String letter, bool succeeded, double bestConfidence})>[];
+    final results =
+        <({String letter, bool succeeded, double bestConfidence, String? confusedWith})>[];
     for (final entry in list) {
       if (entry is! Map) {
         return null;
@@ -96,10 +106,13 @@ class SessionRecord {
         return null;
       }
       final confidence = entry['c'];
+      final confused = entry['x'];
       results.add((
         letter: letter,
         succeeded: ok,
         bestConfidence: confidence is num ? confidence.toDouble() : 0.0,
+        // Records written before confusion was tracked simply have no 'x'.
+        confusedWith: confused is String ? confused : null,
       ));
     }
     final ms = raw['ms'];
@@ -134,4 +147,18 @@ class LetterStat {
   final int hits;
 
   double get accuracy => attempts == 0 ? 0 : hits / attempts;
+}
+
+/// Reads a confusion matrix out of stored rounds.
+extension ConfusionFromHistory on List<SessionRecord> {
+  /// Every recorded mistake, in the shape [ConfusionMatrix.fromRecords] wants.
+  Iterable<({String target, String? detected})> get confusionAttempts sync* {
+    for (final record in this) {
+      for (final result in record.results) {
+        if (!result.succeeded) {
+          yield (target: result.letter, detected: result.confusedWith);
+        }
+      }
+    }
+  }
 }

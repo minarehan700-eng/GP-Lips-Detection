@@ -340,5 +340,63 @@
         "example": "B"
       }
     }
-  }
+  },
+  "calibrate": "Calibrate",
+  "calibrateIntro": "The shipped thresholds were measured on a few faces. Yours is not one of them. Four short holds and the app measures your face instead of guessing at it.",
+  "calibrateRest": "Relax your face. Stay still.",
+  "calibrateWideOpen": "Open your mouth wide.",
+  "calibrateRounded": "Round your lips, as in “oo”.",
+  "calibrateSpread": "Pull your lips wide, as in “ee”.",
+  "calibrateStart": "Start calibration",
+  "calibrateSaved": "Calibrated to your face",
+  "calibrateStepOf": "Step {done} of {total}",
+  "@calibrateStepOf": {
+    "placeholders": {
+      "done": {
+        "type": "int",
+        "example": "2"
+      },
+      "total": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "calibrateFailFew": "Your face was not visible for long enough. Try again in better light.",
+  "calibrateFailRange": "Your resting mouth and your open mouth measured the same. Open wider on the second step.",
+  "calibrateFailRestless": "The camera or your face moved too much to measure. Rest the phone on something.",
+  "confusion": "What you mix up",
+  "confusionPair": "You make {made} when you mean {meant}",
+  "@confusionPair": {
+    "placeholders": {
+      "made": {
+        "type": "String",
+        "example": "D"
+      },
+      "meant": {
+        "type": "String",
+        "example": "C"
+      }
+    }
+  },
+  "confusionNone": "No clear pattern yet. Practise a few more rounds.",
+  "security": "Lock",
+  "securityIntro": "Practice history says how well you can make speech shapes. On a shared phone that is worth a PIN.",
+  "securityEnable": "Require a PIN",
+  "securitySetPin": "Choose a PIN",
+  "securityEnterPin": "Enter your PIN",
+  "securityWrong": "Wrong PIN",
+  "securityLockedOut": "Too many tries. Wait a moment.",
+  "securityUnlock": "Unlock",
+  "securityRemove": "Remove the PIN",
+  "securityPinTooShort": "A PIN needs at least {count} digits",
+  "@securityPinTooShort": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "securityScope": "This locks the app on this phone. It is not a login — there is no account and no server, because the app has no network code at all."
 }

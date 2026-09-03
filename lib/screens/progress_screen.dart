@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../application/lip_letter_detector.dart';
 import '../core/app_theme.dart';
+import '../domain/confusion.dart';
 import '../domain/session_record.dart';
 import '../infrastructure/practice_history_store.dart';
 import '../l10n/app_localizations.dart';
@@ -102,6 +103,10 @@ class _Report extends StatelessWidget {
       LipLetterDetector.supportedLetters,
     );
     final weakest = PracticeHistoryStore.weakestLetter(stats);
+    // "You get C wrong" is not actionable. "You make D when you mean C" tells
+    // the user their lips are stopping at neutral instead of rounding.
+    final confusion =
+        ConfusionMatrix.fromRecords(records.confusionAttempts).worst();
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(14, 8, 14, 24),
@@ -145,6 +150,33 @@ class _Report extends StatelessWidget {
               ),
             ),
           ],
+          const SizedBox(height: 16),
+          Text(l10n.confusion, style: Theme.of(context).textTheme.headlineSmall),
+          const SizedBox(height: 10),
+          GlassCard(
+            borderRadius: 16,
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Icon(
+                  confusion == null
+                      ? Icons.hourglass_empty_rounded
+                      : Icons.compare_arrows_rounded,
+                  color: confusion == null ? Colors.white38 : Colors.orangeAccent,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    confusion == null
+                        ? l10n.confusionNone
+                        : l10n.confusionPair(
+                            confusion.mistakenFor, confusion.target),
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+              ],
+            ),
+          ),
           const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,

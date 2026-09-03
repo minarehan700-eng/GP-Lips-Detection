@@ -14,6 +14,7 @@ import '../widgets/gradient_background.dart';
 import '../widgets/lips_camera_preview.dart';
 import '../widgets/lips_detection_panels.dart';
 import 'about_screen.dart';
+import 'calibration_screen.dart';
 import 'practice_screen.dart';
 import 'progress_screen.dart';
 import 'settings_screen.dart';
@@ -241,6 +242,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final Widget? screen = switch (destination) {
       AppDestination.detect => null,
       AppDestination.practice => const PracticeScreen(),
+      AppDestination.calibrate => const CalibrationScreen(),
       AppDestination.words => const _WordsFlow(),
       AppDestination.shapeGuide => const ShapeGuideScreen(),
       AppDestination.progress => const ProgressScreen(),

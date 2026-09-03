@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../core/app_theme.dart';
+import '../core/app_lock.dart';
 import '../core/app_preferences.dart';
 import '../core/detector_settings.dart';
 import '../l10n/app_localizations.dart';
@@ -174,6 +177,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ],
                         ),
                       ),
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: Text(
+                          l10n.security,
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                      ),
+                      const _LockCard(),
                       const SizedBox(height: 16),
                       SizedBox(
                         width: double.infinity,
@@ -309,6 +321,132 @@ class _LanguagePicker extends StatelessWidget {
             onSelected: (_) => preferences.setLocale(code),
           ),
       ],
+    );
+  }
+}
+
+/// Turns the PIN lock on or off.
+///
+/// Deliberately small: a PIN and a lock-out is the whole of it. There is no
+/// account to create, no password to reset and no server to sign in to,
+/// because the app has no network code — and a login screen over an empty room
+/// would be worse than no security at all, since it would imply protection
+/// that is not there.
+class _LockCard extends StatefulWidget {
+  const _LockCard();
+
+  @override
+  State<_LockCard> createState() => _LockCardState();
+}
+
+class _LockCardState extends State<_LockCard> {
+  final _lock = AppLock();
+  final _pin = TextEditingController();
+
+  bool? _enabled;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_refresh());
+  }
+
+  Future<void> _refresh() async {
+    final enabled = await _lock.isEnabled;
+    if (!mounted) return;
+    setState(() => _enabled = enabled);
+  }
+
+  @override
+  void dispose() {
+    _pin.dispose();
+    super.dispose();
+  }
+
+  Future<void> _apply() async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final pin = _pin.text;
+
+    if (_enabled == true) {
+      // Removing needs the current PIN, so somebody holding the phone cannot
+      // simply switch protection off.
+      final removed = await _lock.removePin(pin);
+      if (!mounted) return;
+      setState(() => _error = removed ? null : l10n.securityWrong);
+      if (removed) {
+        _pin.clear();
+        await _refresh();
+      }
+      return;
+    }
+
+    if (pin.length < AppLock.minPinLength) {
+      setState(() =>
+          _error = l10n.securityPinTooShort(AppLock.minPinLength));
+      return;
+    }
+    await _lock.setPin(pin);
+    if (!mounted) return;
+    _pin.clear();
+    setState(() => _error = null);
+    await _refresh();
+    messenger.showSnackBar(SnackBar(content: Text(l10n.security)));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final enabled = _enabled;
+
+    return GlassCard(
+      borderRadius: 16,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(l10n.securityIntro,
+              style: Theme.of(context).textTheme.bodySmall),
+          const SizedBox(height: 14),
+          if (enabled == null)
+            const Center(child: CircularProgressIndicator())
+          else ...[
+            TextField(
+              controller: _pin,
+              obscureText: true,
+              keyboardType: TextInputType.number,
+              maxLength: AppLock.maxPinLength,
+              decoration: InputDecoration(
+                counterText: '',
+                labelText:
+                    enabled ? l10n.securityEnterPin : l10n.securitySetPin,
+                errorText: _error,
+              ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: _apply,
+                icon: Icon(enabled
+                    ? Icons.lock_open_rounded
+                    : Icons.lock_outline_rounded),
+                label:
+                    Text(enabled ? l10n.securityRemove : l10n.securityEnable),
+              ),
+            ),
+          ],
+          const SizedBox(height: 12),
+          Text(
+            l10n.securityScope,
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall
+                ?.copyWith(color: Colors.white54),
+          ),
+        ],
+      ),
     );
   }
 }

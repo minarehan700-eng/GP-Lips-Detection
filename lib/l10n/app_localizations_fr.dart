@@ -442,4 +442,95 @@ class AppLocalizationsFr extends AppLocalizations {
   String a11yWordShape(int position, int total, String shape) {
     return 'Forme $position sur $total : $shape';
   }
+
+  @override
+  String get calibrate => 'Étalonner';
+
+  @override
+  String get calibrateIntro =>
+      'Les seuils livrés ont été mesurés sur quelques visages. Pas le vôtre. Quatre pauses courtes et l’application mesure votre visage au lieu de le deviner.';
+
+  @override
+  String get calibrateRest => 'Détendez le visage. Ne bougez plus.';
+
+  @override
+  String get calibrateWideOpen => 'Ouvrez grand la bouche.';
+
+  @override
+  String get calibrateRounded => 'Arrondissez les lèvres, comme « ou ».';
+
+  @override
+  String get calibrateSpread => 'Étirez les lèvres, comme « i ».';
+
+  @override
+  String get calibrateStart => 'Lancer l’étalonnage';
+
+  @override
+  String get calibrateSaved => 'Étalonné sur votre visage';
+
+  @override
+  String calibrateStepOf(int done, int total) {
+    return 'Étape $done sur $total';
+  }
+
+  @override
+  String get calibrateFailFew =>
+      'Votre visage n’est pas resté visible assez longtemps. Réessayez avec un meilleur éclairage.';
+
+  @override
+  String get calibrateFailRange =>
+      'Votre bouche au repos et ouverte ont donné la même mesure. Ouvrez davantage à la deuxième étape.';
+
+  @override
+  String get calibrateFailRestless =>
+      'La caméra ou votre visage ont trop bougé. Posez le téléphone sur un support.';
+
+  @override
+  String get confusion => 'Ce que vous confondez';
+
+  @override
+  String confusionPair(String made, String meant) {
+    return 'Vous faites $made au lieu de $meant';
+  }
+
+  @override
+  String get confusionNone =>
+      'Pas encore de tendance nette. Faites quelques séries de plus.';
+
+  @override
+  String get security => 'Verrou';
+
+  @override
+  String get securityIntro =>
+      'L’historique montre votre maîtrise des formes de parole. Sur un téléphone partagé, cela mérite un code.';
+
+  @override
+  String get securityEnable => 'Exiger un code';
+
+  @override
+  String get securitySetPin => 'Choisissez un code';
+
+  @override
+  String get securityEnterPin => 'Saisissez votre code';
+
+  @override
+  String get securityWrong => 'Code incorrect';
+
+  @override
+  String get securityLockedOut => 'Trop d’essais. Patientez un instant.';
+
+  @override
+  String get securityUnlock => 'Déverrouiller';
+
+  @override
+  String get securityRemove => 'Supprimer le code';
+
+  @override
+  String securityPinTooShort(int count) {
+    return 'Le code doit compter au moins $count chiffres';
+  }
+
+  @override
+  String get securityScope =>
+      'Ceci verrouille l’application sur ce téléphone. Ce n’est pas une connexion : ni compte ni serveur, l’application n’ayant aucun code réseau.';
 }

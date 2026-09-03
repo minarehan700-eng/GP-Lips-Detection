@@ -433,4 +433,94 @@ class AppLocalizationsAr extends AppLocalizations {
   String a11yWordShape(int position, int total, String shape) {
     return 'الشكل $position من $total: $shape';
   }
+
+  @override
+  String get calibrate => 'المعايرة';
+
+  @override
+  String get calibrateIntro =>
+      'الحدود الافتراضية قيست على وجوه قليلة، وليس وجهك من بينها. أربع وقفات قصيرة ويقيس التطبيق وجهك بدل أن يخمّن.';
+
+  @override
+  String get calibrateRest => 'أرخِ وجهك واثبت دون حركة.';
+
+  @override
+  String get calibrateWideOpen => 'افتح فمك على اتساعه.';
+
+  @override
+  String get calibrateRounded => 'دوّر شفتيك كما في «أو».';
+
+  @override
+  String get calibrateSpread => 'امدد شفتيك كما في «إي».';
+
+  @override
+  String get calibrateStart => 'ابدأ المعايرة';
+
+  @override
+  String get calibrateSaved => 'تمت المعايرة على وجهك';
+
+  @override
+  String calibrateStepOf(int done, int total) {
+    return 'الخطوة $done من $total';
+  }
+
+  @override
+  String get calibrateFailFew =>
+      'لم يكن وجهك ظاهرًا مدة كافية. حاول مجددًا في إضاءة أفضل.';
+
+  @override
+  String get calibrateFailRange =>
+      'قياس فمك المغلق والمفتوح كان متطابقًا. افتح فمك أكثر في الخطوة الثانية.';
+
+  @override
+  String get calibrateFailRestless =>
+      'تحرك وجهك أو الكاميرا أكثر من اللازم للقياس. اسند الهاتف على شيء ثابت.';
+
+  @override
+  String get confusion => 'ما تخلط بينه';
+
+  @override
+  String confusionPair(String made, String meant) {
+    return 'تكوّن $made بينما تقصد $meant';
+  }
+
+  @override
+  String get confusionNone => 'لا يوجد نمط واضح بعد. تدرّب بضع جولات أخرى.';
+
+  @override
+  String get security => 'القفل';
+
+  @override
+  String get securityIntro =>
+      'سجل التدريب يبيّن مدى قدرتك على تكوين أشكال النطق. على هاتف مشترك، يستحق ذلك رقمًا سريًا.';
+
+  @override
+  String get securityEnable => 'اطلب رقمًا سريًا';
+
+  @override
+  String get securitySetPin => 'اختر رقمًا سريًا';
+
+  @override
+  String get securityEnterPin => 'أدخل رقمك السري';
+
+  @override
+  String get securityWrong => 'رقم سري خاطئ';
+
+  @override
+  String get securityLockedOut => 'محاولات كثيرة. انتظر قليلًا.';
+
+  @override
+  String get securityUnlock => 'افتح';
+
+  @override
+  String get securityRemove => 'إزالة الرقم السري';
+
+  @override
+  String securityPinTooShort(int count) {
+    return 'يحتاج الرقم السري إلى $count خانات على الأقل';
+  }
+
+  @override
+  String get securityScope =>
+      'هذا يقفل التطبيق على هذا الهاتف. ليس تسجيل دخول — لا حساب ولا خادم، لأن التطبيق لا يحتوي على أي كود شبكة.';
 }

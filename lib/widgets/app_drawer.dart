@@ -80,6 +80,7 @@ class AppDrawer extends StatelessWidget {
     return switch (destination) {
       AppDestination.detect => l10n.homeTitle,
       AppDestination.practice => l10n.practice,
+      AppDestination.calibrate => l10n.calibrate,
       AppDestination.words => l10n.words,
       AppDestination.shapeGuide => l10n.chart,
       AppDestination.progress => l10n.progress,
@@ -96,6 +97,7 @@ class AppDrawer extends StatelessWidget {
 enum AppDestination {
   detect(Icons.videocam_rounded),
   practice(Icons.school_rounded),
+  calibrate(Icons.tune_rounded),
   words(Icons.chat_bubble_outline_rounded),
   shapeGuide(Icons.menu_book_rounded),
   progress(Icons.insights_rounded),

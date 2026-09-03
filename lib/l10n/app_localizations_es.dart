@@ -440,4 +440,95 @@ class AppLocalizationsEs extends AppLocalizations {
   String a11yWordShape(int position, int total, String shape) {
     return 'Forma $position de $total: $shape';
   }
+
+  @override
+  String get calibrate => 'Calibrar';
+
+  @override
+  String get calibrateIntro =>
+      'Los umbrales de fábrica se midieron en unas pocas caras. La tuya no es una de ellas. Cuatro pausas breves y la app mide tu cara en vez de adivinarla.';
+
+  @override
+  String get calibrateRest => 'Relaja la cara. No te muevas.';
+
+  @override
+  String get calibrateWideOpen => 'Abre bien la boca.';
+
+  @override
+  String get calibrateRounded => 'Redondea los labios, como en «u».';
+
+  @override
+  String get calibrateSpread => 'Estira los labios, como en «i».';
+
+  @override
+  String get calibrateStart => 'Iniciar calibración';
+
+  @override
+  String get calibrateSaved => 'Calibrado a tu cara';
+
+  @override
+  String calibrateStepOf(int done, int total) {
+    return 'Paso $done de $total';
+  }
+
+  @override
+  String get calibrateFailFew =>
+      'Tu cara no estuvo visible el tiempo suficiente. Inténtalo con mejor luz.';
+
+  @override
+  String get calibrateFailRange =>
+      'Tu boca en reposo y abierta midieron igual. Abre más en el segundo paso.';
+
+  @override
+  String get calibrateFailRestless =>
+      'La cámara o tu cara se movieron demasiado. Apoya el teléfono en algo.';
+
+  @override
+  String get confusion => 'Lo que confundes';
+
+  @override
+  String confusionPair(String made, String meant) {
+    return 'Haces $made cuando quieres $meant';
+  }
+
+  @override
+  String get confusionNone =>
+      'Aún no hay un patrón claro. Practica algunas rondas más.';
+
+  @override
+  String get security => 'Bloqueo';
+
+  @override
+  String get securityIntro =>
+      'El historial dice cómo de bien haces las formas del habla. En un móvil compartido, eso merece un PIN.';
+
+  @override
+  String get securityEnable => 'Pedir un PIN';
+
+  @override
+  String get securitySetPin => 'Elige un PIN';
+
+  @override
+  String get securityEnterPin => 'Introduce tu PIN';
+
+  @override
+  String get securityWrong => 'PIN incorrecto';
+
+  @override
+  String get securityLockedOut => 'Demasiados intentos. Espera un momento.';
+
+  @override
+  String get securityUnlock => 'Desbloquear';
+
+  @override
+  String get securityRemove => 'Quitar el PIN';
+
+  @override
+  String securityPinTooShort(int count) {
+    return 'El PIN necesita al menos $count dígitos';
+  }
+
+  @override
+  String get securityScope =>
+      'Esto bloquea la app en este teléfono. No es un inicio de sesión: no hay cuenta ni servidor, porque la app no tiene código de red.';
 }

@@ -25,6 +25,7 @@ class PracticeAttempt {
     required this.succeeded,
     required this.millisecondsTaken,
     required this.bestConfidence,
+    this.confusedWith,
   });
 
   final String letter;
@@ -37,6 +38,14 @@ class PracticeAttempt {
   /// The highest confidence reached while trying, which says something useful
   /// even about a miss: 0.05 is "nowhere near", 0.26 is "almost".
   final double bestConfidence;
+
+  /// The shape that kept turning up instead of the target, if any one shape
+  /// dominated.
+  ///
+  /// This is the difference between "you get C wrong" and "you make D when you
+  /// mean C" — the second tells the user their lips are stopping at neutral
+  /// instead of rounding, which is something they can act on.
+  final String? confusedWith;
 }
 
 /// Runs one guided practice round: present a letter, wait for the user to hold
@@ -81,6 +90,9 @@ class PracticeSession {
   DateTime? _holdStartedAt;
   double _bestConfidence = 0;
   PracticePhase _phase = PracticePhase.waiting;
+
+  /// How often each wrong shape was seen while the current target was up.
+  final Map<String, int> _wrongShapeCounts = {};
 
   /// Everything scored so far.
   List<PracticeAttempt> get attempts => List.unmodifiable(_attempts);
@@ -127,6 +139,7 @@ class PracticeSession {
     _bestConfidence = 0;
     _holdStartedAt = null;
     _targetShownAt = now;
+    _wrongShapeCounts.clear();
     _phase = PracticePhase.waiting;
   }
 
@@ -157,6 +170,14 @@ class PracticeSession {
       _bestConfidence = result.letterConfidence;
     }
 
+    // A confidently detected *wrong* shape is the useful signal. A frame with
+    // nothing detected, or a barely-there reading, says only that the user was
+    // between shapes, which every attempt passes through.
+    final wrong = result.detectedLetter;
+    if (!onTarget && wrong != null && result.letterConfidence >= minimumConfidence) {
+      _wrongShapeCounts[wrong] = (_wrongShapeCounts[wrong] ?? 0) + 1;
+    }
+
     if (onTarget) {
       _holdStartedAt ??= now;
       if (now.difference(_holdStartedAt!) >= holdDuration) {
@@ -176,6 +197,28 @@ class PracticeSession {
     return _phase = PracticePhase.waiting;
   }
 
+  /// The wrong shape that turned up most, or null when none stood out.
+  ///
+  /// A shape only counts as *the* confusion when it accounts for more than
+  /// half the wrong frames. Passing through two or three shapes on the way to
+  /// the right one is normal and says nothing; returning repeatedly to one of
+  /// them says something worth telling the user.
+  String? _dominantWrongShape() {
+    if (_wrongShapeCounts.isEmpty) {
+      return null;
+    }
+    final total = _wrongShapeCounts.values.reduce((a, b) => a + b);
+    String? best;
+    var bestCount = 0;
+    _wrongShapeCounts.forEach((shape, count) {
+      if (count > bestCount) {
+        best = shape;
+        bestCount = count;
+      }
+    });
+    return bestCount * 2 > total ? best : null;
+  }
+
   /// Records the current target's outcome and moves to the next one.
   PracticePhase _score({required bool succeeded, required DateTime now}) {
     _attempts.add(PracticeAttempt(
@@ -183,12 +226,14 @@ class PracticeSession {
       succeeded: succeeded,
       millisecondsTaken: now.difference(_targetShownAt!).inMilliseconds,
       bestConfidence: _bestConfidence,
+      confusedWith: _dominantWrongShape(),
     ));
 
     _index++;
     _bestConfidence = 0;
     _holdStartedAt = null;
     _targetShownAt = now;
+    _wrongShapeCounts.clear();
 
     if (isFinished) {
       return _phase = PracticePhase.finished;

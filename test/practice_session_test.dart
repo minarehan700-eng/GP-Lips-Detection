@@ -159,6 +159,76 @@ void main() {
     });
   });
 
+  group('noticing what the user makes instead', () {
+    test('a shape made repeatedly instead of the target is recorded', () {
+      final session = sessionOf(['C']);
+
+      // Reaching for C but stopping at D, over and over.
+      for (var i = 0; i < 6; i++) {
+        session.update(seeing('D'), start.add(Duration(milliseconds: i * 100)));
+      }
+      session.update(seeing('D'), start.add(PracticeSession.defaultTimeLimit));
+
+      expect(session.attempts.single.confusedWith, 'D');
+    });
+
+    test('passing through several shapes records none of them', () {
+      // Every attempt crosses neighbouring shapes on the way. That is not a
+      // confusion, and reporting it as one would be noise.
+      final session = sessionOf(['C']);
+
+      session.update(seeing('A'), start);
+      session.update(seeing('B'), start.add(const Duration(milliseconds: 200)));
+      session.update(seeing('E'), start.add(const Duration(milliseconds: 400)));
+      session.update(seeing('D'), start.add(PracticeSession.defaultTimeLimit));
+
+      expect(session.attempts.single.confusedWith, isNull);
+    });
+
+    test('a barely-there reading is not counted as a confusion', () {
+      final session = sessionOf(['C']);
+
+      for (var i = 0; i < 6; i++) {
+        session.update(
+          seeing('D', confidence: 0.05),
+          start.add(Duration(milliseconds: i * 100)),
+        );
+      }
+      session.update(seeing('D', confidence: 0.05),
+          start.add(PracticeSession.defaultTimeLimit));
+
+      expect(session.attempts.single.confusedWith, isNull);
+    });
+
+    test('a success carries no confusion', () {
+      final session = sessionOf(['A']);
+
+      session.update(seeing('A'), start);
+      session.update(seeing('A'), start.add(PracticeSession.defaultHoldDuration));
+
+      expect(session.attempts.single.confusedWith, isNull);
+    });
+
+    test('each letter is judged on its own frames', () {
+      // The count has to reset between targets, or the first letter's mistakes
+      // would be blamed on the second.
+      final session = sessionOf(['C', 'A']);
+
+      for (var i = 0; i < 6; i++) {
+        session.update(seeing('D'), start.add(Duration(milliseconds: i * 100)));
+      }
+      final missedAt = start.add(PracticeSession.defaultTimeLimit);
+      session.update(seeing('D'), missedAt);
+
+      session.update(seeing('A'), missedAt);
+      session.update(
+          seeing('A'), missedAt.add(PracticeSession.defaultHoldDuration));
+
+      expect(session.attempts[0].confusedWith, 'D');
+      expect(session.attempts[1].confusedWith, isNull);
+    });
+  });
+
   group('progress reporting', () {
     test('hold progress runs from zero to one and stops there', () {
       final session = sessionOf(['A']);

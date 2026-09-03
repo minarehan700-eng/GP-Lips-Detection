@@ -21,7 +21,12 @@ void main() {
         finishedAt: DateTime(2026, 1, 1),
         results: [
           for (final (letter, ok) in results)
-            (letter: letter, succeeded: ok, bestConfidence: 0.5),
+            (
+              letter: letter,
+              succeeded: ok,
+              bestConfidence: 0.5,
+              confusedWith: null,
+            ),
         ],
         totalMilliseconds: 1000,
       );
@@ -111,6 +116,44 @@ void main() {
       findsOneWidget,
     );
     handle.dispose();
+  });
+
+  testWidgets('names the pair the user keeps mixing up', (tester) async {
+    // "You get C wrong" is not actionable. This is.
+    final store = PracticeHistoryStore();
+    await store.add(SessionRecord(
+      finishedAt: DateTime(2026, 1, 1),
+      results: [
+        for (var i = 0; i < 4; i++)
+          (letter: 'C', succeeded: false, bestConfidence: 0.2, confusedWith: 'D'),
+      ],
+      totalMilliseconds: 4000,
+    ));
+
+    await tester.pumpWidget(localizedApp(ProgressScreen(store: store)));
+    await tester.pumpAndSettle();
+
+    final finder = find.text(en.confusionPair('D', 'C'));
+    await tester.scrollUntilVisible(finder, 200);
+    expect(finder, findsOneWidget);
+  });
+
+  testWidgets('says nothing when there is no clear pattern', (tester) async {
+    final store = PracticeHistoryStore();
+    await store.add(SessionRecord(
+      finishedAt: DateTime(2026, 1, 1),
+      results: const [
+        (letter: 'C', succeeded: false, bestConfidence: 0.2, confusedWith: 'D'),
+      ],
+      totalMilliseconds: 1000,
+    ));
+
+    await tester.pumpWidget(localizedApp(ProgressScreen(store: store)));
+    await tester.pumpAndSettle();
+
+    final finder = find.text(en.confusionNone);
+    await tester.scrollUntilVisible(finder, 200);
+    expect(finder, findsOneWidget);
   });
 
   testWidgets('the screen works in Arabic', (tester) async {

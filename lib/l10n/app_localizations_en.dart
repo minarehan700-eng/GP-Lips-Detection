@@ -438,4 +438,95 @@ class AppLocalizationsEn extends AppLocalizations {
   String a11yWordShape(int position, int total, String shape) {
     return 'Shape $position of $total: $shape';
   }
+
+  @override
+  String get calibrate => 'Calibrate';
+
+  @override
+  String get calibrateIntro =>
+      'The shipped thresholds were measured on a few faces. Yours is not one of them. Four short holds and the app measures your face instead of guessing at it.';
+
+  @override
+  String get calibrateRest => 'Relax your face. Stay still.';
+
+  @override
+  String get calibrateWideOpen => 'Open your mouth wide.';
+
+  @override
+  String get calibrateRounded => 'Round your lips, as in “oo”.';
+
+  @override
+  String get calibrateSpread => 'Pull your lips wide, as in “ee”.';
+
+  @override
+  String get calibrateStart => 'Start calibration';
+
+  @override
+  String get calibrateSaved => 'Calibrated to your face';
+
+  @override
+  String calibrateStepOf(int done, int total) {
+    return 'Step $done of $total';
+  }
+
+  @override
+  String get calibrateFailFew =>
+      'Your face was not visible for long enough. Try again in better light.';
+
+  @override
+  String get calibrateFailRange =>
+      'Your resting mouth and your open mouth measured the same. Open wider on the second step.';
+
+  @override
+  String get calibrateFailRestless =>
+      'The camera or your face moved too much to measure. Rest the phone on something.';
+
+  @override
+  String get confusion => 'What you mix up';
+
+  @override
+  String confusionPair(String made, String meant) {
+    return 'You make $made when you mean $meant';
+  }
+
+  @override
+  String get confusionNone =>
+      'No clear pattern yet. Practise a few more rounds.';
+
+  @override
+  String get security => 'Lock';
+
+  @override
+  String get securityIntro =>
+      'Practice history says how well you can make speech shapes. On a shared phone that is worth a PIN.';
+
+  @override
+  String get securityEnable => 'Require a PIN';
+
+  @override
+  String get securitySetPin => 'Choose a PIN';
+
+  @override
+  String get securityEnterPin => 'Enter your PIN';
+
+  @override
+  String get securityWrong => 'Wrong PIN';
+
+  @override
+  String get securityLockedOut => 'Too many tries. Wait a moment.';
+
+  @override
+  String get securityUnlock => 'Unlock';
+
+  @override
+  String get securityRemove => 'Remove the PIN';
+
+  @override
+  String securityPinTooShort(int count) {
+    return 'A PIN needs at least $count digits';
+  }
+
+  @override
+  String get securityScope =>
+      'This locks the app on this phone. It is not a login — there is no account and no server, because the app has no network code at all.';
 }

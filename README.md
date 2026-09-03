@@ -488,6 +488,75 @@ not in this build.
 
 ---
 
+## Calibration
+
+The shipped thresholds were measured on a few faces. Yours is probably not one
+of them — mouth size, lip shape, beard, camera distance and lighting all move
+the raw readings, so the same `0.25` that is a wide-open mouth on one person is
+a resting face on another.
+
+Calibration replaces the guess with a measurement. Four short holds — rest,
+wide open, rounded, spread — and the app derives your own thresholds.
+
+The interesting step is **rest**. Its *spread* — how much the readings wobble
+while you are deliberately holding still — is your noise floor, and a motion
+threshold below it would fire on a motionless face. The motion threshold is set
+at 2.5× that wobble.
+
+A calibration is **refused, with a reason**, when it cannot be trusted:
+
+| Refused when | Because |
+|---|---|
+| A step never got enough frames | Your face was not visible long enough |
+| Rest and wide-open measured the same | The mouth was probably never opened |
+| The resting face would not hold still | A moving camera or very poor light |
+
+Silently accepting any of those would leave you with thresholds *worse* than
+the defaults and nothing to explain why detection got worse. The median is used
+rather than the mean throughout, so one dropped frame does not drag a whole
+step.
+
+## What you mix up
+
+A per-letter accuracy score throws away the most useful thing: *what you made
+instead*. "You get C wrong" is not actionable. **"You make D when you mean C"**
+tells you your lips are stopping at neutral instead of rounding.
+
+So each missed attempt records the shape that kept turning up — but only when
+one shape accounts for more than half the wrong frames. Every attempt passes
+through two or three shapes on the way to the right one; that is normal and
+says nothing. Returning repeatedly to one of them says something.
+
+It is also a diagnosis of the **detector**, not only the user. If everyone
+confuses the same pair, the thresholds separating those two shapes are wrong.
+
+## The lock
+
+Practice history says how well you can make speech shapes. That is
+health-adjacent information about a disability, on a phone families share.
+
+- The PIN is stored as **PBKDF2-HMAC-SHA256**, 120 000 rounds, with a random
+  16-byte salt per device. The PIN itself is never written down.
+- Comparison is **constant-time**, so how long a check takes says nothing about
+  how much of a guess was right.
+- Three free tries, then a **doubling lock-out** up to 30 minutes. A four-digit
+  PIN is ten thousand guesses; unthrottled that is a couple of minutes of
+  scripting.
+- Removing the PIN requires the current one.
+
+The PBKDF2 is written out rather than pulled from a package — it is twenty
+lines — and is checked against **four published RFC test vectors**. An
+implementation nobody has verified against a known answer is not worth trusting
+with a PIN.
+
+> **What this is not.** It is not a login. There is no account, no server and no
+> password reset, because the app has no network code at all. It also does not
+> defend against a rooted phone with a debugger attached: `shared_preferences`
+> is not encrypted storage. Claiming otherwise would be worse than claiming
+> nothing.
+
+---
+
 ## Practice mode
 
 The home screen answers *"what shape am I making?"*. That is a demonstration.

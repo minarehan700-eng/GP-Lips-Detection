@@ -833,6 +833,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Shape {position} of {total}: {shape}'**
   String a11yWordShape(int position, int total, String shape);
+
+  /// No description provided for @calibrate.
+  ///
+  /// In en, this message translates to:
+  /// **'Calibrate'**
+  String get calibrate;
+
+  /// No description provided for @calibrateIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'The shipped thresholds were measured on a few faces. Yours is not one of them. Four short holds and the app measures your face instead of guessing at it.'**
+  String get calibrateIntro;
+
+  /// No description provided for @calibrateRest.
+  ///
+  /// In en, this message translates to:
+  /// **'Relax your face. Stay still.'**
+  String get calibrateRest;
+
+  /// No description provided for @calibrateWideOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open your mouth wide.'**
+  String get calibrateWideOpen;
+
+  /// No description provided for @calibrateRounded.
+  ///
+  /// In en, this message translates to:
+  /// **'Round your lips, as in “oo”.'**
+  String get calibrateRounded;
+
+  /// No description provided for @calibrateSpread.
+  ///
+  /// In en, this message translates to:
+  /// **'Pull your lips wide, as in “ee”.'**
+  String get calibrateSpread;
+
+  /// No description provided for @calibrateStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start calibration'**
+  String get calibrateStart;
+
+  /// No description provided for @calibrateSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Calibrated to your face'**
+  String get calibrateSaved;
+
+  /// No description provided for @calibrateStepOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {done} of {total}'**
+  String calibrateStepOf(int done, int total);
+
+  /// No description provided for @calibrateFailFew.
+  ///
+  /// In en, this message translates to:
+  /// **'Your face was not visible for long enough. Try again in better light.'**
+  String get calibrateFailFew;
+
+  /// No description provided for @calibrateFailRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Your resting mouth and your open mouth measured the same. Open wider on the second step.'**
+  String get calibrateFailRange;
+
+  /// No description provided for @calibrateFailRestless.
+  ///
+  /// In en, this message translates to:
+  /// **'The camera or your face moved too much to measure. Rest the phone on something.'**
+  String get calibrateFailRestless;
+
+  /// No description provided for @confusion.
+  ///
+  /// In en, this message translates to:
+  /// **'What you mix up'**
+  String get confusion;
+
+  /// No description provided for @confusionPair.
+  ///
+  /// In en, this message translates to:
+  /// **'You make {made} when you mean {meant}'**
+  String confusionPair(String made, String meant);
+
+  /// No description provided for @confusionNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No clear pattern yet. Practise a few more rounds.'**
+  String get confusionNone;
+
+  /// No description provided for @security.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock'**
+  String get security;
+
+  /// No description provided for @securityIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice history says how well you can make speech shapes. On a shared phone that is worth a PIN.'**
+  String get securityIntro;
+
+  /// No description provided for @securityEnable.
+  ///
+  /// In en, this message translates to:
+  /// **'Require a PIN'**
+  String get securityEnable;
+
+  /// No description provided for @securitySetPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a PIN'**
+  String get securitySetPin;
+
+  /// No description provided for @securityEnterPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your PIN'**
+  String get securityEnterPin;
+
+  /// No description provided for @securityWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong PIN'**
+  String get securityWrong;
+
+  /// No description provided for @securityLockedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many tries. Wait a moment.'**
+  String get securityLockedOut;
+
+  /// No description provided for @securityUnlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock'**
+  String get securityUnlock;
+
+  /// No description provided for @securityRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove the PIN'**
+  String get securityRemove;
+
+  /// No description provided for @securityPinTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'A PIN needs at least {count} digits'**
+  String securityPinTooShort(int count);
+
+  /// No description provided for @securityScope.
+  ///
+  /// In en, this message translates to:
+  /// **'This locks the app on this phone. It is not a login — there is no account and no server, because the app has no network code at all.'**
+  String get securityScope;
 }
 
 class _AppLocalizationsDelegate
